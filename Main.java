@@ -41,6 +41,47 @@ public class Main{
         }
     }
 
+	public static void userGuess() throws IOException{
+        b = 0;
+        w = 0;
+        HashMap<Character, Integer> cmap = new HashMap<>();
+        cmap.put('G', 0);
+        cmap.put('R', 1);
+        cmap.put('B', 2);
+        cmap.put('Y', 3);
+        cmap.put('O', 4);
+        cmap.put('P', 5);
+
+        int[] gFreq = new int[6];
+        ArrayList<Character> guessList = new ArrayList<>();
+        int[] limit = new int[6];
+        for (int i = 0; i < 6; i++) {
+            limit[i] = freqArr[i];
+        }
+
+        System.out.println("Enter guess");
+        String guess = readLine();
+        if(guess.equals(code)) over = true;
+        else {
+            int i = 0;
+            for (char c : guess.toCharArray()) {
+                guessList.add(c);
+                int temp = cmap.get(c);
+                gFreq[temp]++;
+                i++;
+            }
+
+            for (int j = 0; j < 4; j++) {
+                if (guessList.get(j)== codeList.get(j)) {
+                    char c = guessList.get(j);
+                    if(limit[cmap.get(c)]>0 && gFreq[cmap.get(c)]>0) {
+                        limit[cmap.get(c)]--;
+                        gFreq[cmap.get(c)]--;
+                        b++;
+                    }
+                }
+            }
+	
     public static int[] check(ArrayList<Character>guess){
     	int[]results = new int[2];
 		for(int i = 0; i < guess.size(); i++){
