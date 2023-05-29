@@ -1,30 +1,42 @@
-
 import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
 public class Main{
+
     private static final char[] COLORS = {'G', 'R', 'B', 'Y', 'O', 'P'};
     private static ArrayList<ArrayList<Character>> possibleCombinations = new ArrayList<>();
+    private static ArrayList<Character>guess = new ArrayList<>();
+    private static int[] freqArr = new int[6];
     private static ArrayList<Character>code = new ArrayList<Character>();
     public static void main(String[]args){
-    	ArrayList<Character> guess = new ArrayList<Character>();
-        generateOutcomes();
-        computerGuess();
+        
+        //when the code is inputed, run initComputer
+        initComputer();
         code.add('G');
         code.add('G');
-        code.add('Y');
-        code.add('Y');
-        guess.add('G');
-        guess.add('G');
-        guess.add('G');
-        guess.add('Y');
-        int results [] = check(guess);
-        for(int i = 0; i < results.length; i++){
-        	System.out.println(results[i]);
-        }
+        code.add('R');
+        code.add('R');
+
+
+        computerGuess(getHint(guess));
     }
 
-    public static void generateOutcomes(){
+    public static void initComputer(){
+        possibleCombinations.clear();
+        generateOutcomes();
 
-        
+        //starting initial guess
+        guess.add('G');
+        guess.add('G');
+        guess.add('R');
+        guess.add('R');
+        //update GUI
+    }
+
+    
+    public static void generateOutcomes(){
         for (int a = 0; a < COLORS.length; a++) {
             for (int b = 0; b < COLORS.length; b++) {
                 for (int c = 0; c < COLORS.length; c++) {
@@ -41,63 +53,68 @@ public class Main{
         }
     }
 
-	public static void userGuess() throws IOException{
-        b = 0;
-        w = 0;
-        HashMap<Character, Integer> cmap = new HashMap<>();
-        cmap.put('G', 0);
-        cmap.put('R', 1);
-        cmap.put('B', 2);
-        cmap.put('Y', 3);
-        cmap.put('O', 4);
-        cmap.put('P', 5);
 
-        int[] gFreq = new int[6];
-        ArrayList<Character> guessList = new ArrayList<>();
+    static boolean over = false;
+    static HashMap<Character, Integer> colourMap = new HashMap<>();
+    public static int[] getHint(ArrayList<Character>guess) {
+        int hints [] = new int[2];
+
+        int[] guessFreq = new int[6];
         int[] limit = new int[6];
         for (int i = 0; i < 6; i++) {
             limit[i] = freqArr[i];
         }
 
-        System.out.println("Enter guess");
-        String guess = readLine();
         if(guess.equals(code)) over = true;
         else {
-            int i = 0;
-            for (char c : guess.toCharArray()) {
-                guessList.add(c);
-                int temp = cmap.get(c);
-                gFreq[temp]++;
-                i++;
+            for (int i = 0; i < guess.size(); i++) {
+                int temp = colourMap.get(guess.get(i));
+                guessFreq[temp]++;
             }
 
             for (int j = 0; j < 4; j++) {
-                if (guessList.get(j)== codeList.get(j)) {
-                    char c = guessList.get(j);
-                    if(limit[cmap.get(c)]>0 && gFreq[cmap.get(c)]>0) {
-                        limit[cmap.get(c)]--;
-                        gFreq[cmap.get(c)]--;
-                        b++;
+                if (guess.get(j)== code.get(j)) {
+                    char c = guess.get(j);
+                    if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
+                        limit[colourMap.get(c)]--;
+                        guessFreq[colourMap.get(c)]--;
+                        hints[0]++;
                     }
                 }
             }
-	
-    public static int[] check(ArrayList<Character>guess){
-    	int[]results = new int[2];
-		for(int i = 0; i < guess.size(); i++){
-			if(code.get(i) == guess.get(i)){
-				results[0]++;
-			}
-			else if(code.contains(guess.get(i))){
-				results[1]++;
-			}
-		}
-		return results;
+
+            for (int j = 0; j < 4; j++) {
+                char c = guess.get(j);
+                if (code.contains(c) && guess.get(j)!=code.get(j)) {
+                    if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
+                        limit[colourMap.get(c)]--;
+                        guessFreq[colourMap.get(c)]--;
+                        hints[1]++;
+                    }
+                }
+            }
+        }
+        return hints;
     }
 
-    public static void computerGuess(){
-    	char bond[] = new char[2];
+    public static ArrayList<Character> computerGuess(int hints[]){
+        for(int i = 0; i < possibleCombinations.size(); i++){
+            
+            //the following code to check if the combination will create the same hints as the answer given the guess
+            int results[] = getHint(possibleCombinations.get(i));
+            for(int j = 0; j < 2; j++){
+
+                //results are from the possible combinations
+                //hints are from guess being compared to the answer
+                if(results[j] != hints[j]){
+                    possibleCombinations.remove(i);
+                    j=2; //to end the for loop early
+                }
+            }
+        }
+        //one of the possible combinations
+        return possibleCombinations.get(0);
+        
     }
 
-    
 }
