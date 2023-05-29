@@ -14,13 +14,21 @@ public class Main{
         
         //when the code is inputed, run initComputer
         initComputer();
-        code.add('G');
-        code.add('G');
-        code.add('R');
-        code.add('R');
 
+        initComputer();
+        
+        //Guess is GGRR
 
-        computerGuess(getHint(guess));
+        int results[] = getHint(guess);
+        System.out.println(results[0] + " " + results[1]);
+        
+        while(results[0]!=2 && results[1]!=2){
+        	computerGuess(results);
+        	results = getHint(guess);
+            System.out.println(results[0] + " " + results[1]);
+            
+        }
+        
     }
 
     public static void initComputer(){
@@ -28,10 +36,31 @@ public class Main{
         generateOutcomes();
 
         //starting initial guess
+        
+        //following are just for the test cast
         guess.add('G');
         guess.add('G');
+        guess.add('Y');
         guess.add('R');
-        guess.add('R');
+        
+        code.add('G');
+        code.add('G');
+        code.add('G');
+        code.add('R');
+        
+        colourMap.put('G', 0);
+        colourMap.put('R', 1);
+        colourMap.put('B', 2);
+        colourMap.put('Y', 3);
+        colourMap.put('O', 4);
+        colourMap.put('P', 5);
+        
+        //freqArray
+        
+        freqArr[0]++;
+        freqArr[0]++;
+        freqArr[0]++;
+        freqArr[1]++;
         //update GUI
     }
 
@@ -71,7 +100,7 @@ public class Main{
         }
 
         for (int j = 0; j < 4; j++) {
-            if (guess.get(j)== codeList.get(j)) {
+            if (guess.get(j)== code.get(j)) {
                 char c = guess.get(j);
                 if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
                     limit[colourMap.get(c)]--;
@@ -83,7 +112,7 @@ public class Main{
 
         for (int j = 0; j < 4; j++) {
             char c = guess.get(j);
-            if (codeList.contains(c) && guess.get(j)!=codeList.get(j)) {
+            if (code.contains(c) && guess.get(j)!=code.get(j)) {
                 if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
                     limit[colourMap.get(c)]--;
                     guessFreq[colourMap.get(c)]--;
@@ -96,6 +125,8 @@ public class Main{
     }
 
     public static ArrayList<Character> computerGuess(int hints[]){
+    	possibleCombinations.remove(0);
+        //remove the current guess from possibleCombinations so .get(0)
         for(int i = 0; i < possibleCombinations.size(); i++){
             
             //the following code to check if the combination will create the same hints as the answer given the guess
@@ -106,11 +137,14 @@ public class Main{
                 //hints are from guess being compared to the answer
                 if(results[j] != hints[j]){
                     possibleCombinations.remove(i);
+
+                    
                     j=2; //to end the for loop early
                 }
             }
         }
         //one of the possible combinations
+        System.out.println(possibleCombinations);
         return possibleCombinations.get(0);
         
     }
