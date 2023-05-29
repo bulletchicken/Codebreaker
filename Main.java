@@ -56,8 +56,8 @@ public class Main{
 
     static boolean over = false;
     static HashMap<Character, Integer> colourMap = new HashMap<>();
-    public static int[] getHint(ArrayList<Character>guess) {
-        int hints [] = new int[2];
+    public static int[] getHint(ArrayList<Character> guess) {
+        int[] hints = new int[2];
 
         int[] guessFreq = new int[6];
         int[] limit = new int[6];
@@ -65,35 +65,33 @@ public class Main{
             limit[i] = freqArr[i];
         }
 
-        if(guess.equals(code)) over = true;
-        else {
-            for (int i = 0; i < guess.size(); i++) {
-                int temp = colourMap.get(guess.get(i));
-                guessFreq[temp]++;
-            }
+        for (char c : guess) {
+            int temp = colourMap.get(c);
+            guessFreq[temp]++;
+        }
 
-            for (int j = 0; j < 4; j++) {
-                if (guess.get(j)== code.get(j)) {
-                    char c = guess.get(j);
-                    if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                        limit[colourMap.get(c)]--;
-                        guessFreq[colourMap.get(c)]--;
-                        hints[0]++;
-                    }
-                }
-            }
-
-            for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 4; j++) {
+            if (guess.get(j)== codeList.get(j)) {
                 char c = guess.get(j);
-                if (code.contains(c) && guess.get(j)!=code.get(j)) {
-                    if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                        limit[colourMap.get(c)]--;
-                        guessFreq[colourMap.get(c)]--;
-                        hints[1]++;
-                    }
+                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
+                    limit[colourMap.get(c)]--;
+                    guessFreq[colourMap.get(c)]--;
+                    hints[0]++;
                 }
             }
         }
+
+        for (int j = 0; j < 4; j++) {
+            char c = guess.get(j);
+            if (codeList.contains(c) && guess.get(j)!=codeList.get(j)) {
+                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
+                    limit[colourMap.get(c)]--;
+                    guessFreq[colourMap.get(c)]--;
+                    hints[1]++;
+                }
+            }
+        }
+
         return hints;
     }
 
