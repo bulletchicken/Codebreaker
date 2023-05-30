@@ -9,9 +9,9 @@ public class UserGUI extends JFrame implements ActionListener{
     static String guess;
     static int[] freqArr = new int[6];
     boolean state = false;
-    static int black = 0, white = 0,  guesses = 0;;
+    static int guesses = 0;;
 
-    JFrame mainFrame = new JFrame(); //display frame
+
     JPanel userGuessPan = new JPanel(); //user inputs colours to guess
     JPanel compHintPan = new JPanel(); //computer sets the hints for the user
     JPanel guessButtonPan = new JPanel(); //different modes of each colour
@@ -159,6 +159,7 @@ public class UserGUI extends JFrame implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent event) {
+        int[] hints = new int[2];
 
         String command = event.getActionCommand();
         if(colours.contains(command)){
@@ -177,50 +178,26 @@ public class UserGUI extends JFrame implements ActionListener{
         if(command.equals("submit")&&!over){
             guesses++;
             guessCount.setText("guesses: " + guesses);
-            guess="";
-            for (int i = 0; i < 4; i++) {
-                guess+=boxes.get(i).getText();
-            }
-            userGuess();
-            if(guess.equals(code)){
-                whiteLabel.setText("You won!");
-                blackLabel.setText("");
-            }
-            else {
-                whiteLabel.setText(white + " white pins");
-                blackLabel.setText(black + " black pins");
-            }
+
+            ArrayList<Character> guessList = getGuess();
+
+            hints = getHint(guessList);
+            renderFeedback(hints);
+
             if(guesses==10){
-                guessCount.setText("guesses: 10");
-                blackLabel.setFont(new Font("Arial", Font.PLAIN, 30));
-                blackLabel.setText("Game over 10 guesses reached");
-                whiteLabel.setText("Code: "+code);
-                over = true;
+                gameOver();
             }
-//            if(!over) {
-//                for (JButton j : boxes) {
-//                    j.setText("");
-//                }
-//            }
         }
+
         if(command.equals("restart")){
-            guesses=0;
-            over=false;
-            guessCount.setText("guesses: 0");
-            code = genCode();
-            System.out.println(code);
-            whiteLabel.setText("");
-            blackLabel.setText("");
-            for(JButton j : boxes){
-                j.setText("");
-            }
+            restart();
         }
     }
 
     private static final char[] COLORS = {'G', 'R', 'B', 'Y', 'O', 'P'};
 
     public static String genCode(){
-
+        freqArr = new int[6];
         code = "";
 
         for (int i = 0; i < 4; i++) { //randomly generate the code
@@ -236,48 +213,86 @@ public class UserGUI extends JFrame implements ActionListener{
     static boolean over = false;
     static HashMap<Character, Integer> colourMap = new HashMap<>();
 
-    public static void userGuess() {
-        black = 0;
-        white = 0;
+    public static int[] getHint(ArrayList<Character> guess) {
+        int[] hints = new int[2];
 
         int[] guessFreq = new int[6];
-        ArrayList<Character> guessList = new ArrayList<>();
         int[] limit = new int[6];
         for (int i = 0; i < 6; i++) {
             limit[i] = freqArr[i];
         }
 
-        if(guess.equals(code)) over = true;
-        else {
-            for (char c : guess.toCharArray()) {
-                guessList.add(c);
-                int temp = colourMap.get(c);
-                guessFreq[temp]++;
-            }
+        for (char c : guess) {
+            int temp = colourMap.get(c);
+            guessFreq[temp]++;
+        }
 
-            for (int j = 0; j < 4; j++) {
-                if (guessList.get(j)== codeList.get(j)) {
-                    char c = guessList.get(j);
-                    if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                        limit[colourMap.get(c)]--;
-                        guessFreq[colourMap.get(c)]--;
-                        black++;
-                    }
-                }
-            }
-
-            for (int j = 0; j < 4; j++) {
-                char c = guessList.get(j);
-                if (codeList.contains(c) && guessList.get(j)!=codeList.get(j)) {
-                    if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                        limit[colourMap.get(c)]--;
-                        guessFreq[colourMap.get(c)]--;
-                        white++;
-                    }
+        for (int j = 0; j < 4; j++) {
+            if (guess.get(j)== codeList.get(j)) {
+                char c = guess.get(j);
+                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
+                    limit[colourMap.get(c)]--;
+                    guessFreq[colourMap.get(c)]--;
+                    hints[0]++;
                 }
             }
         }
 
+        for (int j = 0; j < 4; j++) {
+            char c = guess.get(j);
+            if (codeList.contains(c) && guess.get(j)!=codeList.get(j)) {
+                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
+                    limit[colourMap.get(c)]--;
+                    guessFreq[colourMap.get(c)]--;
+                    hints[1]++;
+                }
+            }
+        }
+
+        return hints;
+    }
+
+    public void restart(){
+        guesses=0;
+        over=false;
+        guessCount.setText("guesses: 0");
+        code = genCode();
+        System.out.println(code);
+        whiteLabel.setText("");
+        blackLabel.setText("");
+        for(JButton j : boxes){
+            j.setText("");
+        }
+    }
+
+    public void gameOver(){
+        guessCount.setText("guesses: 10");
+        blackLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+        blackLabel.setText("Game over 10 guesses reached");
+        whiteLabel.setText("Code: "+code);
+        over = true;
+    }
+
+    public ArrayList<Character> getGuess(){
+        guess="";
+        ArrayList<Character> guessList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            guess+=boxes.get(i).getText();
+            guessList.add(boxes.get(i).getText().charAt(0));
+        }
+        return guessList;
+    }
+
+    public void renderFeedback(int[] hints){
+        if(guess.equals(code)){
+            whiteLabel.setText("You won!");
+            blackLabel.setText("");
+            over=true;
+        }
+        else {
+            whiteLabel.setText(hints[1] + " white pins");
+            blackLabel.setText(hints[0] + " black pins");
+        }
     }
 
 }
