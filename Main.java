@@ -2,68 +2,110 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 public class Main{
 
+    //given possible colours for the game
     private static final char[] COLORS = {'G', 'R', 'B', 'Y', 'O', 'P'};
+    //stores all possible combinations given the colours and slots
     private static ArrayList<ArrayList<Character>> possibleCombinations = new ArrayList<>();
+    //the guess to be compared against the code
     private static ArrayList<Character>guess = new ArrayList<>();
-    private static int[] freqArr = new int[6];
+    //the combination answer
     private static ArrayList<Character>code = new ArrayList<Character>();
-    public static void main(String[]args){
-        
-        //when the code is inputed, run initComputer
-        initComputer();
+    
 
+    public static void main(String[]args) throws IOException{
+        
+        //initialize computer mode variables;
         initComputer();
         
-        //Guess is GGRR
+        int results[] = new int[2];
+        int numOfGuesses = 0;
 
-        int results[] = getHint(guess);
-        System.out.println(results[0] + " " + results[1]);
-        
-        while(results[0]!=2 && results[1]!=2){
-        	computerGuess(results);
-        	results = getHint(guess);
-            System.out.println(results[0] + " " + results[1]);
+        //demo code
+        //guesses until computer gets it right
+        do{
+            numOfGuesses++;
             
-        }
+            //first run uses the already set guess
+            if(numOfGuesses==1){
+            	results = getHint(guess, code);
+            } else{
+                //get the new guess based off the hints of the current guess
+            	guess = computerGuess(results);
+            }
+
+
+            //get the hints based off the new guess and the answer
+        	results = getHint(guess, code);
+
+            //print the tried combination
+            System.out.println("Guess num: " + numOfGuesses);
+            System.out.println(guess);
+            System.out.println("Black pins: " + results[0]);
+            System.out.println("White pins: " + results[1]);
+            System.out.println("------------");
+            System.out.println();
+        }while(results[0]!=4); //4 black pins mean the answer was reached
+        
+        System.out.println("Total # of guesses: " + numOfGuesses);
+        System.out.println("Answer is " + guess);
         
     }
 
-    public static void initComputer(){
+    /**initComputer method()
+	 * 
+	 * initComputer stands for initialize computer. This method resets all the
+     * variables in preperation for a new game run. It sets the code with user input
+	 *
+	 * LOCAL VARIABLES
+	 * combination - ArrayList<Character>
+	 * 
+	 * @param n/a
+	 * @return n/a
+     * @throws IOException
+	 */
+    public static void initComputer()throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //empties the arraylists
         possibleCombinations.clear();
+        guess.clear();
+        code.clear();
+
+        //generates all possible outcomes to fill up possibleCombinations arraylist
         generateOutcomes();
 
-        //starting initial guess
-        
-        //following are just for the test cast
+        //starting initial guess (can be anything)
         guess.add('G');
         guess.add('G');
-        guess.add('Y');
         guess.add('R');
-        
-        code.add('G');
-        code.add('G');
-        code.add('G');
-        code.add('R');
-        
-        colourMap.put('G', 0);
-        colourMap.put('R', 1);
-        colourMap.put('B', 2);
-        colourMap.put('Y', 3);
-        colourMap.put('O', 4);
-        colourMap.put('P', 5);
-        
-        //freqArray
-        
-        freqArr[0]++;
-        freqArr[0]++;
-        freqArr[0]++;
-        freqArr[1]++;
-        //update GUI
+        guess.add('R');
+
+        //input for setting the code
+        System.out.println("Setting the Code: Options - G, R, B, Y, O, P");
+        for(int i = 0; i < 4; i++){
+            System.out.println("Enter Letter #" + (i+1));
+            code.add(br.readLine().charAt(0));
+        }
     }
 
+    
+	/**generateOutcomes method()
+	 * 
+	 * This method generates every possible combination of the 6 colours within
+     * the COLORS array in 4 slots. It adds each of these combinations into
+     * a combination arraylist, and that arraylist gets added into a 2d array 
+     * called possibleCombinations. This arraylist is every possible combination 
+     * for the game.
+	 *
+	 * LOCAL VARIABLES
+	 * combination - ArrayList<Character>
+	 * 
+	 * @param n/a
+	 * @return n/a
+	 */
     
     public static void generateOutcomes(){
         for (int a = 0; a < COLORS.length; a++) {
@@ -82,69 +124,93 @@ public class Main{
         }
     }
 
+    /**getHint method()
+	 * 
+	 * This method is used to check two combinations and to return the hints between them.
+     * The method makes a copy of both since we will be removing values for counting. After
+     * If colours are the same in the same index between the two combinations, increment 
+     * hints[0] representing black pins. Then it removes it from the array so when we count
+     * whites it doesn't double count. For white, we loop through the remaining combinations
+     * and use .contains() to check if the same colour is atleast somewhere in the combination
+	 * 
+     * LOCAL VARIABLES
+	 * guessCopy - ArrayList<Character>
+	 * codeCopy - ArrayList<Character>
+     * 
+	 * @param:
+     * ArrayList<Character>guess
+     * ArrayList<Character>compareCode
+     * 
+	 * @return int[]
+	 */
+    public static int[] getHint(ArrayList<Character> guess, ArrayList<Character>compareCode) {
+        int hints [] = new int[2]; //# of pins are stored in the array. [0] represents black, [1] represents white
+        
+        //creating a copy of the guess combination and the answer combination
+        ArrayList<Character>guessCopy = new ArrayList<Character>();
+        ArrayList<Character>codeCopy = new ArrayList<Character>();
+        for(int i = 0; i < guess.size(); i++){
+            guessCopy.add(guess.get(i));
+            codeCopy.add(compareCode.get(i));
+        }   
 
-    static boolean over = false;
-    static HashMap<Character, Integer> colourMap = new HashMap<>();
-    public static int[] getHint(ArrayList<Character> guess) {
-        int[] hints = new int[2];
-
-        int[] guessFreq = new int[6];
-        int[] limit = new int[6];
-        for (int i = 0; i < 6; i++) {
-            limit[i] = freqArr[i];
-        }
-
-        for (char c : guess) {
-            int temp = colourMap.get(c);
-            guessFreq[temp]++;
-        }
-
-        for (int j = 0; j < 4; j++) {
-            if (guess.get(j)== code.get(j)) {
-                char c = guess.get(j);
-                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                    limit[colourMap.get(c)]--;
-                    guessFreq[colourMap.get(c)]--;
-                    hints[0]++;
-                }
+        //checks for same colour between the two lists in the same index
+        for(int i = 0; i < guessCopy.size(); i++){
+            if(guessCopy.get(i)==codeCopy.get(i)){
+                hints[0]++; //adds 1 black pin
+                guessCopy.remove(i); //removes the colour from both arrays so when we count white, it does not double count
+                codeCopy.remove(i);
+                i--; //when we remove a colour, all values shift in index by 1 back, so we have to follow by decrementing too
             }
         }
 
-        for (int j = 0; j < 4; j++) {
-            char c = guess.get(j);
-            if (code.contains(c) && guess.get(j)!=code.get(j)) {
-                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                    limit[colourMap.get(c)]--;
-                    guessFreq[colourMap.get(c)]--;
-                    hints[1]++;
-                }
+        //checks for if the colour from the guess is atleast contained in the code
+        for(int i = 0; i < guessCopy.size(); i++){
+            if(codeCopy.contains(guessCopy.get(i))){
+                hints[1]++; //adds 1 white pin
+                codeCopy.remove(guessCopy.get(i));
+                guessCopy.remove(i);
+                i--; 
             }
         }
 
+        //returns the pins
         return hints;
     }
 
+
+    /**computerGuess method()
+	 * 
+	 * This method is used to generate the next guest and eventually reach the answer.
+     * The method cycles through all possible combinations and then calls the getHint
+     * method between the guess and the possible combination. Like a detective, it will
+     * see if the possibleCombination will produce the exact same hint as the answer.
+     * If it doesn't, the combination is no longer possible at all and is removed from
+     * the list. The next guess should be any value still remaining in the possible
+     * combinations. 
+     *  
+     * 
+	 * @param:
+     * int hints[]
+     * 
+	 * @return ArrayList<Character>
+	 */
     public static ArrayList<Character> computerGuess(int hints[]){
-    	possibleCombinations.remove(0);
-        //remove the current guess from possibleCombinations so .get(0)
+        //cycle through all possible combinations
         for(int i = 0; i < possibleCombinations.size(); i++){
             
-            //the following code to check if the combination will create the same hints as the answer given the guess
-            int results[] = getHint(possibleCombinations.get(i));
-            for(int j = 0; j < 2; j++){
+            //get the hints between the guess and every possible combination.
+            int results[] = getHint(guess, possibleCombinations.get(i));
 
-                //results are from the possible combinations
-                //hints are from guess being compared to the answer
-                if(results[j] != hints[j]){
-                    possibleCombinations.remove(i);
-
-                    
-                    j=2; //to end the for loop early
-                }
+            //compare if hints generated between the guess-code and the guess-possibleCombination are the same
+            //if the posisble combination does not generate the same hints, it cannot possibly be
+            //the answer so we remove it from the arraylist of possible combinations 
+            if( (results[0] != hints[0]) || (results[1] != hints[1]) ){
+                possibleCombinations.remove(i);
+                i--; //when you remove a value from arraylist, all indexes shift back by one so you have to do the same with index
             }
         }
-        //one of the possible combinations
-        System.out.println(possibleCombinations);
+        //set guess as one of the possible combinations, in this case, the first
         return possibleCombinations.get(0);
         
     }
