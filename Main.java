@@ -8,30 +8,35 @@ public class Main{
 
     //given possible colours for the game
     private static final char[] COLORS = {'G', 'R', 'B', 'Y', 'O', 'P'};
-    
     //stores all possible combinations given the colours and slots
     private static ArrayList<ArrayList<Character>> possibleCombinations = new ArrayList<>();
-    
     //the guess to be compared against the code
     private static ArrayList<Character>guess = new ArrayList<>();
-
     //the combination answer
     private static ArrayList<Character>code = new ArrayList<Character>();
+    
 
     public static void main(String[]args) throws IOException{
         
         //initialize computer mode variables;
         initComputer();
         
-        int results[] = getHint(guess, code);
+        int results[] = new int[2];
         int numOfGuesses = 0;
 
         //demo code
         //guesses until computer gets it right
         do{
             numOfGuesses++;
-            //get the new guess based off the hints of the current guess
-        	guess = computerGuess(results);
+            
+            //first run uses the already set guess
+            if(numOfGuesses==1){
+            	results = getHint(guess, code);
+            } else{
+                //get the new guess based off the hints of the current guess
+            	guess = computerGuess(results);
+            }
+
 
             //get the hints based off the new guess and the answer
         	results = getHint(guess, code);
@@ -41,11 +46,12 @@ public class Main{
             System.out.println(guess);
             System.out.println("Black pins: " + results[0]);
             System.out.println("White pins: " + results[1]);
-            System.out.println("---------");
+            System.out.println("------------");
+            System.out.println();
         }while(results[0]!=4); //4 black pins mean the answer was reached
         
-        System.out.println(numOfGuesses);
-        System.out.println(guess);
+        System.out.println("Total # of guesses: " + numOfGuesses);
+        System.out.println("Answer is " + guess);
         
     }
 
@@ -77,7 +83,8 @@ public class Main{
         guess.add('R');
         guess.add('R');
 
-        //input
+        //input for setting the code
+        System.out.println("Setting the Code: Options - G, R, B, Y, O, P");
         for(int i = 0; i < 4; i++){
             System.out.println("Enter Letter #" + (i+1));
             code.add(br.readLine().charAt(0));
@@ -161,8 +168,8 @@ public class Main{
         for(int i = 0; i < guessCopy.size(); i++){
             if(codeCopy.contains(guessCopy.get(i))){
                 hints[1]++; //adds 1 white pin
+                codeCopy.remove(guessCopy.get(i));
                 guessCopy.remove(i);
-                codeCopy.remove(i);
                 i--; 
             }
         }
