@@ -69,19 +69,11 @@ public class UserGUI extends JFrame implements ActionListener{
         boxes.add(box2);
         boxes.add(box3);
         boxes.add(box4);
-        rPin.setFont(new Font("Arial", Font.PLAIN, 60));
-        gPin.setFont(new Font("Arial", Font.PLAIN, 60));
-        bPin.setFont(new Font("Arial", Font.PLAIN, 60));
-        yPin.setFont(new Font("Arial", Font.PLAIN, 60));
-        oPin.setFont(new Font("Arial", Font.PLAIN, 60));
-        pPin.setFont(new Font("Arial", Font.PLAIN, 60));
+
         desc.setFont(new Font("Arial", Font.PLAIN, 60));
         pinLabel.setFont(new Font("Arial", Font.PLAIN, 60));
         fLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        box1.setFont(new Font("Arial", Font.PLAIN, 60));
-        box2.setFont(new Font("Arial", Font.PLAIN, 60));
-        box3.setFont(new Font("Arial", Font.PLAIN, 60));
-        box4.setFont(new Font("Arial", Font.PLAIN, 60));
+
         blackLabel.setFont(new Font("Arial", Font.PLAIN, 60));
         whiteLabel.setFont(new Font("Arial", Font.PLAIN, 60));
         clear.setFont(new Font("Arial", Font.PLAIN, 40));
@@ -90,16 +82,7 @@ public class UserGUI extends JFrame implements ActionListener{
         reset.setFont(new Font("Arial", Font.PLAIN, 40));
         reset.setBounds(600, 0, 390, 100);
 
-        rPin.addActionListener(this);
-        gPin.addActionListener(this);
-        bPin.addActionListener(this);
-        yPin.addActionListener(this);
-        oPin.addActionListener(this);
-        pPin.addActionListener(this);
-        box1.addActionListener(this);
-        box2.addActionListener(this);
-        box3.addActionListener(this);
-        box4.addActionListener(this);
+
         clear.addActionListener(this);
         submit.addActionListener(this);
         reset.addActionListener(this);
@@ -114,18 +97,20 @@ public class UserGUI extends JFrame implements ActionListener{
         resetAndCountPan.add(guessCount);
         resetAndCountPan.add(reset);
 
-        guessButtonPan.add(rPin);
-        guessButtonPan.add(gPin);
-        guessButtonPan.add(bPin);
-        guessButtonPan.add(yPin);
-        guessButtonPan.add(oPin);
-        guessButtonPan.add(pPin);
+
+        for(JButton j:btn){
+            guessButtonPan.add(j);
+            j.addActionListener(this);
+            j.setFont(new Font("Arial", Font.PLAIN, 60));
+        }
         guessButtonPan.add(clear);
 
-        userGuessPan.add(box1);
-        userGuessPan.add(box2);
-        userGuessPan.add(box3);
-        userGuessPan.add(box4);
+
+        for(JButton box:boxes){
+            userGuessPan.add(box);
+            box.addActionListener(this);
+            box.setFont(new Font("Arial", Font.PLAIN, 60));
+        }
         userGuessPan.add(submit);
 
         compHintPan.add(blackLabel);
