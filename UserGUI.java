@@ -4,8 +4,8 @@ import java.awt.event.*;
 import java.util.*;
 
 public class UserGUI extends JFrame implements ActionListener{
-    static ArrayList<Character> codeList = new ArrayList<>();
-    static String code = "";
+    static ArrayList<Character> code = new ArrayList<>();
+    static String codeStr = "";
     static String guess;
     static int[] freqArr = new int[6];
     boolean state = false;
@@ -132,7 +132,7 @@ public class UserGUI extends JFrame implements ActionListener{
     public static void main(String[] args) {
         UserGUI frame = new UserGUI();
         genCode();
-        System.out.println(code);
+        System.out.println(codeStr);
         over = false;
 
         colourMap.put('G', 0);
@@ -183,17 +183,17 @@ public class UserGUI extends JFrame implements ActionListener{
 
     public static String genCode(){
         freqArr = new int[6];
-        code = "";
+        codeStr = "";
 
-        for (int i = 0; i < 4; i++) { //randomly generate the code
+        for (int i = 0; i < 4; i++) { //randomly generate the codeStr
             int tempNum = ((int) (Math.random() * 6));
             char tempChar = COLORS[tempNum];
-            code += tempChar; //add to code string
-            codeList.add(tempChar); //add to arraylist of chars
+            codeStr += tempChar; //add to codeStr string
+            code.add(tempChar); //add to arraylist of chars
             freqArr[tempNum]++;
         }
 
-        return code;
+        return codeStr;
     }
     static boolean over = false;
     static HashMap<Character, Integer> colourMap = new HashMap<>();
@@ -213,7 +213,7 @@ public class UserGUI extends JFrame implements ActionListener{
         }
 
         for (int j = 0; j < 4; j++) {
-            if (guess.get(j)== codeList.get(j)) {
+            if (guess.get(j)== code.get(j)) {
                 char c = guess.get(j);
                 if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
                     limit[colourMap.get(c)]--;
@@ -225,7 +225,7 @@ public class UserGUI extends JFrame implements ActionListener{
 
         for (int j = 0; j < 4; j++) {
             char c = guess.get(j);
-            if (codeList.contains(c) && guess.get(j)!=codeList.get(j)) {
+            if (code.contains(c) && guess.get(j)!=code.get(j)) {
                 if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
                     limit[colourMap.get(c)]--;
                     guessFreq[colourMap.get(c)]--;
@@ -241,8 +241,8 @@ public class UserGUI extends JFrame implements ActionListener{
         guesses=0;
         over=false;
         guessCount.setText("guesses: 0");
-        code = genCode();
-        System.out.println(code);
+        codeStr = genCode();
+        System.out.println(codeStr);
         whiteLabel.setText("");
         blackLabel.setText("");
         for(JButton j : boxes){
@@ -254,7 +254,7 @@ public class UserGUI extends JFrame implements ActionListener{
         guessCount.setText("guesses: 10");
         blackLabel.setFont(new Font("Arial", Font.PLAIN, 30));
         blackLabel.setText("Game over 10 guesses reached");
-        whiteLabel.setText("Code: "+code);
+        whiteLabel.setText("Code: "+codeStr);
         over = true;
     }
 
@@ -269,7 +269,7 @@ public class UserGUI extends JFrame implements ActionListener{
     }
 
     public void renderFeedback(int[] hints){
-        if(guess.equals(code)){
+        if(guess.equals(codeStr)){
             whiteLabel.setText("You won!");
             blackLabel.setText("");
             over=true;
