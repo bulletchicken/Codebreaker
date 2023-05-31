@@ -150,17 +150,6 @@ public class Merge extends JFrame implements ActionListener{
 
     }
 
-    public static void main(String[]args) throws IOException{
-
-        Merge frame = new Merge();
-        genCode();
-        System.out.println(codeStr);
-        over = false;
-        
-        //initialize computer mode variables;
-        //initComputer();
-    }
-
     Color oldColour;
     Color oldForeCOlour;
     public void actionPerformed(ActionEvent event) {
@@ -218,7 +207,7 @@ public class Merge extends JFrame implements ActionListener{
         }
     }
 
-    public static String genCode(){
+    public String genCode(){
         freqArr = new int[6];
         codeStr = "";
         code = new ArrayList<>();
