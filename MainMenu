@@ -15,54 +15,144 @@ public class MainMenu extends JFrame implements ActionListener {
     JButton goToUserGuessing = new JButton("User Guessing");
     JButton goToCompGuessing = new JButton("Computer Guessing");
     JButton goToInstructions = new JButton("Instructions");
-    public MainMenu(){
+
+    public MainMenu() {
         setTitle("Code Breaker - Home Screen");
-		setSize(800, 800);
-		setLocationRelativeTo(null);
-		setResizable(true);
-		setVisible(true);
-		setLayout(new BorderLayout());
-		
-		mainUI.setLayout(new GridLayout(2, 3));
-		title.setFont(new Font("Courier", Font.BOLD,75));
-		title.setSize(1280, 900);
-	    title.setHorizontalAlignment(JLabel.CENTER);
-	    title.setVerticalAlignment(JLabel.CENTER);
-		buttonList.setLayout(new GridLayout(3, 1));
-		buttonList.setBorder(new EmptyBorder(0, 100, 200, 100));
-		comboUserName.setLayout(new BorderLayout());
-		comboUserName.add(goToUserGuessing);
-		comboUserName.setBorder(new EmptyBorder(5, 5, 5, 5));
-		goToCompGuessing.setBorder(new EmptyBorder(5, 5, 5, 5));
-		goToInstructions.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setSize(800, 800);
+        setLocationRelativeTo(null);
+        setResizable(true);
+        setVisible(true);
+        setLayout(new BorderLayout());
+
+        mainUI.setLayout(new GridLayout(2, 3));
+
+        mainUI.setBackground(Color.DARK_GRAY);
+        buttonList.setBackground(Color.DARK_GRAY);
+        title.setFont(new Font("Courier", Font.BOLD, 75));
+        title.setSize(1280, 900);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setVerticalAlignment(JLabel.CENTER);
+        title.setForeground(Color.WHITE);
+        
+        GridLayout gridLayout = new GridLayout(3, 1);
+        gridLayout.setVgap(10);
+
+        buttonList.setLayout(gridLayout);
+        buttonList.setBorder(new EmptyBorder(0, 100, 100, 100));
+        comboUserName.setLayout(new BorderLayout());
+        comboUserName.setFocusable(false);
+        goToUserGuessing.setFocusable(false);
+        
+
+        Font customFont = new Font("Courier", Font.BOLD, 24);
+        goToUserGuessing.setBorderPainted(false);
+        goToCompGuessing.setBorderPainted(false);
+        goToInstructions.setBorderPainted(false);
+
+        goToUserGuessing.setFont(customFont);
+        goToCompGuessing.setFont(customFont);
+        goToInstructions.setFont(customFont);
+        
+
+        // Setting button foreground and background colors
+        goToUserGuessing.setForeground(Color.WHITE);
+        goToUserGuessing.setBackground(Color.BLACK);
+        goToCompGuessing.setForeground(Color.WHITE);
+        goToCompGuessing.setBackground(Color.BLACK);
+        goToInstructions.setForeground(Color.WHITE);
+        goToInstructions.setBackground(Color.BLACK);
+        
+        // Adding button hover effect
+        goToUserGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                goToUserGuessing.setBackground(Color.CYAN);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                goToUserGuessing.setBackground(Color.BLACK);
+            }
+        });
+
+        goToCompGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                goToCompGuessing.setBackground(Color.CYAN);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                goToCompGuessing.setBackground(Color.BLACK);
+            }
+        });
+
+        goToInstructions.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                goToInstructions.setBackground(Color.CYAN);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                goToInstructions.setBackground(Color.BLACK);
+            }
+        });
+
+
+
+        // Add action listener to the first button
+        goToUserGuessing.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Remove the button
+                comboUserName.remove(goToUserGuessing);
+                // Add a text field
+                JTextField enterName = new JTextField();
+                enterName.setText("Enter Player Name...");
+                enterName.addFocusListener(new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        if (enterName.getText().equals("Enter Player Name...")) {
+                            enterName.setText("");
+                            enterName.setForeground(Color.BLACK);
+                        }
+                    }
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        if (enterName.getText().isEmpty()) {
+                            enterName.setForeground(Color.GRAY);
+                            enterName.setText("Enter Player Name...");
+                        }
+                    }
+                    });
+                enterName.setFont(customFont);
+                comboUserName.add(enterName, BorderLayout.CENTER);
+                // Add a button beside the text field
+                JButton submitButton = new JButton("begin");
+                submitButton.setBackground(Color.gray);
+                submitButton.setForeground(Color.white);
+
+
+                submitButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dispose();
+                        String playerName = enterName.getText();
+                        Merge merge = new Merge(playerName);
+                        
+                    }
+                });
+
+
+                comboUserName.add(submitButton, BorderLayout.EAST);
+                // Revalidate and repaint the panel to update the changes
+                comboUserName.revalidate();
+                comboUserName.repaint();
+            }
+        });
+
+        comboUserName.add(goToUserGuessing);
         buttonList.add(comboUserName);
         buttonList.add(goToCompGuessing);
         buttonList.add(goToInstructions);
-		buttonList.setBackground(Color.blue);
-		//buttonList.setSize(300, 300);
 
-        goToUserGuessing.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-                dispose();
-                Merge merge = new Merge();
-			}
-		});
 
-        goToCompGuessing.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-                dispose();
-			}
-		});
-        
-        
-        mainUI.add(title, BorderLayout.CENTER);
+        mainUI.add(title);
         mainUI.add(buttonList);
-        mainUI.setVisible(true);
-        add(mainUI);
+        add(mainUI, BorderLayout.CENTER);
     }
-
 
     public static void main(String[]args){
         //Merge merge = new Merge();
