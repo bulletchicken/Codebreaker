@@ -61,7 +61,8 @@ public class Merge extends JFrame implements ActionListener{
     GridLayout hlay = new GridLayout(1, 2); //hints lyaout
     GridLayout rcp = new GridLayout(1, 2);//gridlayout for  reset and count panel
 
-    public Merge(){
+    public Merge(String playerName){
+        System.out.println(playerName);
         setSize(1400 ,1000);
         setTitle("Codebreaker");
         btn.add(rPin);
