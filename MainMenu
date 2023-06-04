@@ -1,60 +1,82 @@
-import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
 
-public class MainMenu extends JFrame implements ActionListener {
+public class MainMenu extends JFrame {
+    private static JLabel changingLabel;
+
+    //The array is randomized in a way so that there will be a greater frequency of 0, O, and o so that the randomly changing text can still be read as o to some degree
+    private static final String CHARACTERSO = "AOODOOXEOG0Ooogoi0olOnoOK0OU02305ocdo0oOOZa0JP0ROTsouowo0o0080";
+    //Same for the other two letters
+    private static final String CHARACTERSE = "AEEEMVEeefFmnep67ee1233iDENRSTEeeeIJeeEYEab0EeelsteeEEEweye383";
+    private static final String CHARACTERSA = "AACaanAADaaHasaa1Aa4aAvaIaaKAMAaXAAQAATUaaoaadafacaalaaiyz07aA";
+    private static int currentIndex = 0;
+
     JPanel mainUI = new JPanel();
     JPanel buttonList = new JPanel();
     JPanel comboUserName = new JPanel();
+    JPanel titleCard = new JPanel();
     JLabel title = new JLabel("Code Breaker");
+    JLabel subtitle = new JLabel("By Jeremy Su & Eric Chen");
     JButton goToUserGuessing = new JButton("User Guessing");
     JButton goToCompGuessing = new JButton("Computer Guessing");
     JButton goToInstructions = new JButton("Instructions");
 
     public MainMenu() {
+
+        //adjusting the main window's settings
         setTitle("Code Breaker - Home Screen");
         setSize(800, 800);
-        setLocationRelativeTo(null);
-        setResizable(true);
-        setVisible(true);
+        setLocationRelativeTo(null); //centering the window on the screen on popup
+        setResizable(true); //user can resize as they wish
+        setVisible(true); //show on the screen
         setLayout(new BorderLayout());
 
-        mainUI.setLayout(new GridLayout(2, 3));
-
-        mainUI.setBackground(Color.DARK_GRAY);
-        buttonList.setBackground(Color.DARK_GRAY);
+        //setting the layouts for the components
+        GridLayout buttonsLayout = new GridLayout(3, 1);
+        buttonsLayout.setVgap(10); //spacing out each of the buttons
+        buttonList.setLayout(buttonsLayout); 
+        comboUserName.setLayout(new BorderLayout()); //so a submit button and a textfield can be placed side by side
+        mainUI.setLayout(new GridLayout(2, 3)); //layout for the title and buttons
+        
+        //setting the fonts for the title and subtitle
         title.setFont(new Font("Courier", Font.BOLD, 75));
-        title.setSize(1280, 900);
+        subtitle.setFont(new Font("Courier", Font.PLAIN, 24));
+
+        //aligning the title to the centre
         title.setHorizontalAlignment(JLabel.CENTER);
         title.setVerticalAlignment(JLabel.CENTER);
-        title.setForeground(Color.WHITE);
-        
-        GridLayout gridLayout = new GridLayout(3, 1);
-        gridLayout.setVgap(10);
 
-        buttonList.setLayout(gridLayout);
+        //adjusting the margins of the list of buttons and the title so that it is spaced evenly
         buttonList.setBorder(new EmptyBorder(0, 100, 100, 100));
-        comboUserName.setLayout(new BorderLayout());
-        comboUserName.setFocusable(false);
-        goToUserGuessing.setFocusable(false);
-        
+        titleCard.setBorder(new EmptyBorder(100, 0, 100, 0));
 
-        Font customFont = new Font("Courier", Font.BOLD, 24);
+        //removing the default border around the buttons
         goToUserGuessing.setBorderPainted(false);
         goToCompGuessing.setBorderPainted(false);
         goToInstructions.setBorderPainted(false);
 
+        //setting fonts of all the buttons
+        Font customFont = new Font("Courier", Font.BOLD, 24);
         goToUserGuessing.setFont(customFont);
         goToCompGuessing.setFont(customFont);
         goToInstructions.setFont(customFont);
-        
 
-        // Setting button foreground and background colors
+        //setting the background of the window to dark gray and the text color to white
+        mainUI.setBackground(Color.DARK_GRAY);
+        buttonList.setBackground(Color.DARK_GRAY);
+        title.setForeground(Color.WHITE);
+        subtitle.setForeground(Color.WHITE);
+        titleCard.setBackground(Color.DARK_GRAY);
+
+
+        //setting button colors to black and text to white
         goToUserGuessing.setForeground(Color.WHITE);
         goToUserGuessing.setBackground(Color.BLACK);
         goToCompGuessing.setForeground(Color.WHITE);
@@ -62,16 +84,15 @@ public class MainMenu extends JFrame implements ActionListener {
         goToInstructions.setForeground(Color.WHITE);
         goToInstructions.setBackground(Color.BLACK);
         
-        // Adding button hover effect
+        //adding button hover effect to change the colour of the button
         goToUserGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(java.awt.event.MouseEvent evt) { //if mouse is hovering button, set the background color to cyan
                 goToUserGuessing.setBackground(Color.CYAN);
             }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(java.awt.event.MouseEvent evt) { //if mouse is not hovering, set background to black
                 goToUserGuessing.setBackground(Color.BLACK);
             }
         });
-
         goToCompGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 goToCompGuessing.setBackground(Color.CYAN);
@@ -80,7 +101,6 @@ public class MainMenu extends JFrame implements ActionListener {
                 goToCompGuessing.setBackground(Color.BLACK);
             }
         });
-
         goToInstructions.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 goToInstructions.setBackground(Color.CYAN);
@@ -92,18 +112,22 @@ public class MainMenu extends JFrame implements ActionListener {
 
 
 
-        // Add action listener to the first button
+        //making the first button change so that the user has to enter a name. Adds a textfield and submit button when the first button is pressed
         goToUserGuessing.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Remove the button
+                //remove the original button
                 comboUserName.remove(goToUserGuessing);
-                // Add a text field
+                //add a text field for entering name
                 JTextField enterName = new JTextField();
-                enterName.setText("Enter Player Name...");
+                enterName.setText("Enter Player Name..."); //adding placeholder text
+
+                //when the player clicks the textfield, removes the placeholder text
                 enterName.addFocusListener(new FocusListener() {
                     @Override
                     public void focusGained(FocusEvent e) {
+
+                        //empties the textfield if there is placeholder text inside
                         if (enterName.getText().equals("Enter Player Name...")) {
                             enterName.setText("");
                             enterName.setForeground(Color.BLACK);
@@ -111,45 +135,81 @@ public class MainMenu extends JFrame implements ActionListener {
                     }
                     @Override
                     public void focusLost(FocusEvent e) {
+
+                        //places the placeholder text if there is nothing inside
                         if (enterName.getText().isEmpty()) {
                             enterName.setForeground(Color.GRAY);
                             enterName.setText("Enter Player Name...");
                         }
                     }
-                    });
+                });
+
+                //setting the font inside the textfield
                 enterName.setFont(customFont);
+
+                //adding the textfield to the place the button user to be in
                 comboUserName.add(enterName, BorderLayout.CENTER);
+
                 // Add a button beside the text field
                 JButton submitButton = new JButton("begin");
-                submitButton.setBackground(Color.gray);
-                submitButton.setForeground(Color.white);
+                submitButton.setBackground(Color.gray); //background colour
+                submitButton.setForeground(Color.white); //text colour
 
-
+                //adding the function for the submit name button
                 submitButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        dispose();
-                        String playerName = enterName.getText();
-                        Merge merge = new Merge(playerName);
                         
+                        String playerName = enterName.getText(); //retrieve the name from the textfield
+                        if(playerName.equals("Enter Player Name...")){ //if the name is still the placeholder, prompt user to enter a name before playing
+                            enterName.setBackground(Color.RED); //set the textfield to red if no name is entered
+                        } else{
+                            dispose(); //if a name is entered, close the main menu
+                            Merge merge = new Merge(playerName); //open the player guessing mode with constructor parameters of the player's name
+                        }
                     }
                 });
+                comboUserName.add(submitButton, BorderLayout.EAST); //adding the submit button to the planel the first button was
 
-
-                comboUserName.add(submitButton, BorderLayout.EAST);
-                // Revalidate and repaint the panel to update the changes
+                //update the panel to see the new textfield and button
                 comboUserName.revalidate();
                 comboUserName.repaint();
             }
         });
 
+        goToInstructions.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InstructionsManual instructions = new InstructionsManual();
+            }
+        });
+
+
+        //making the changing text in the title
+        //have a timer tick and a method run every 40 miliseconds
+        Timer timer = new Timer(40, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+
+                    currentIndex = (currentIndex + 1) % CHARACTERSO.length();//current index increases by one and when it reaches the end, modulus changes the number to go back to 0
+                    title.setText("C" + String.valueOf(CHARACTERSO.charAt(currentIndex))+"debr" + String.valueOf(CHARACTERSE.charAt(currentIndex))+ String.valueOf(CHARACTERSA.charAt(currentIndex)) + "ker"); //take a randomized letter from the three arrays made before
+                }catch(Exception error){
+                    System.out.println(error);
+                }
+            }
+        });
+        timer.start(); //start the timer
+
+
+        //adding all the components to the JFrame
+        titleCard.add(title);
+        titleCard.add(subtitle);
         comboUserName.add(goToUserGuessing);
         buttonList.add(comboUserName);
         buttonList.add(goToCompGuessing);
         buttonList.add(goToInstructions);
-
-
-        mainUI.add(title);
+        mainUI.add(titleCard);
         mainUI.add(buttonList);
         add(mainUI, BorderLayout.CENTER);
     }
@@ -158,12 +218,5 @@ public class MainMenu extends JFrame implements ActionListener {
         //Merge merge = new Merge();
         //merge.genCode();
         MainMenu mainMenu = new MainMenu();
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
     }
 }
