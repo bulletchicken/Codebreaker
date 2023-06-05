@@ -61,7 +61,8 @@ public class Merge extends JFrame implements ActionListener{
     GridLayout hlay = new GridLayout(1, 2); //hints lyaout
     GridLayout rcp = new GridLayout(1, 2);//gridlayout for  reset and count panel
 
-    public Merge(){
+    public Merge(String playerName){
+        System.out.println(playerName);
         setSize(1400 ,1000);
         setTitle("Codebreaker");
         btn.add(rPin);
@@ -150,17 +151,6 @@ public class Merge extends JFrame implements ActionListener{
 
     }
 
-    public static void main(String[]args) throws IOException{
-
-        Merge frame = new Merge();
-        genCode();
-        System.out.println(codeStr);
-        over = false;
-        
-        //initialize computer mode variables;
-        //initComputer();
-    }
-
     Color oldColour;
     Color oldForeCOlour;
     public void actionPerformed(ActionEvent event) {
@@ -218,7 +208,7 @@ public class Merge extends JFrame implements ActionListener{
         }
     }
 
-    public static String genCode(){
+    public String genCode(){
         freqArr = new int[6];
         codeStr = "";
         code = new ArrayList<>();

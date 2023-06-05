@@ -14,8 +14,8 @@ public class MainMenu extends JFrame {
     //The array is randomized in a way so that there will be a greater frequency of 0, O, and o so that the randomly changing text can still be read as o to some degree
     private static final String CHARACTERSO = "AOODOOXEOG0Ooogoi0olOnoOK0OU02305ocdo0oOOZa0JP0ROTsouowo0o0080";
     //Same for the other two letters
-    private static final String CHARACTERSE = "AEeeMVEeefFmnep67ee1233iDENRSTEeeeIJeeEYEab0EeelsteeEEeweye383";
-    private static final String CHARACTERSA = "aACaanAaDaaHasaa1Aa4aAvaIaaKAMAaXAAQAATUaaoaadafacaalaaiyz07aA";
+    private static final String CHARACTERSE = "AEEEMVEeefFmnep67ee1233iDENRSTEeeeIJeeEYEab0EeelsteeEEEweye383";
+    private static final String CHARACTERSA = "AACaanAADaaHasaa1Aa4aAvaIaaKAMAaXAAQAATUaaoaadafacaalaaiyz07aA";
     private static int currentIndex = 0;
 
     JPanel mainUI = new JPanel();
