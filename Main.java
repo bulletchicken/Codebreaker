@@ -1,222 +1,234 @@
+import java.util.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
+public class Main{
 
-public class MainMenu extends JFrame {
-    private static JLabel changingLabel;
+    //given possible colours for the game
+    private static final char[] COLORS = {'G', 'R', 'B', 'Y', 'O', 'P'};
+    //stores all possible combinations given the colours and slots
+    private static ArrayList<ArrayList<Character>> possibleCombinations = new ArrayList<>();
+    //the guess to be compared against the code
+    private static ArrayList<Character>guess = new ArrayList<>();
+    //the combination answer
+    private static ArrayList<Character>code = new ArrayList<Character>();
+    
 
-    //The array is randomized in a way so that there will be a greater frequency of 0, O, and o so that the randomly changing text can still be read as o to some degree
-    private static final String CHARACTERSO = "AOODOOXEOG0Ooogoi0olOnoOK0OU02305ocdo0oOOZa0JP0ROTsouowo0o0080";
-    //Same for the other two letters
-    private static final String CHARACTERSE = "AEeeMVEeefFmnep67ee1233iDENRSTEeeeIJeeEYEab0EeelsteeEEeweye383";
-    private static final String CHARACTERSA = "aACaanAaDaaHasaa1Aa4aAvaIaaKAMAaXAAQAATUaaoaadafacaalaaiyz07aA";
-    private static int currentIndex = 0;
-
-    JPanel mainUI = new JPanel();
-    JPanel buttonList = new JPanel();
-    JPanel comboUserName = new JPanel();
-    JPanel titleCard = new JPanel();
-    JLabel title = new JLabel("Code Breaker");
-    JLabel subtitle = new JLabel("By Jeremy Su & Eric Chen");
-    JButton goToUserGuessing = new JButton("User Guessing");
-    JButton goToCompGuessing = new JButton("Computer Guessing");
-    JButton goToInstructions = new JButton("Instructions");
-
-    public MainMenu() {
-
-        //adjusting the main window's settings
-        setTitle("Code Breaker - Home Screen");
-        setSize(800, 800);
-        setLocationRelativeTo(null); //centering the window on the screen on popup
-        setResizable(true); //user can resize as they wish
-        setVisible(true); //show on the screen
-        setLayout(new BorderLayout());
-
-        //setting the layouts for the components
-        GridLayout buttonsLayout = new GridLayout(3, 1);
-        buttonsLayout.setVgap(10); //spacing out each of the buttons
-        buttonList.setLayout(buttonsLayout); 
-        comboUserName.setLayout(new BorderLayout()); //so a submit button and a textfield can be placed side by side
-        mainUI.setLayout(new GridLayout(2, 3)); //layout for the title and buttons
+    public static void main(String[]args) throws IOException{
         
-        //setting the fonts for the title and subtitle
-        title.setFont(new Font("Courier", Font.BOLD, 75));
-        subtitle.setFont(new Font("Courier", Font.PLAIN, 24));
-
-        //aligning the title to the centre
-        title.setHorizontalAlignment(JLabel.CENTER);
-        title.setVerticalAlignment(JLabel.CENTER);
-
-        //adjusting the margins of the list of buttons and the title so that it is spaced evenly
-        buttonList.setBorder(new EmptyBorder(0, 100, 100, 100));
-        titleCard.setBorder(new EmptyBorder(100, 0, 100, 0));
-
-        //removing the default border around the buttons
-        goToUserGuessing.setBorderPainted(false);
-        goToCompGuessing.setBorderPainted(false);
-        goToInstructions.setBorderPainted(false);
-
-        //setting fonts of all the buttons
-        Font customFont = new Font("Courier", Font.BOLD, 24);
-        goToUserGuessing.setFont(customFont);
-        goToCompGuessing.setFont(customFont);
-        goToInstructions.setFont(customFont);
-
-        //setting the background of the window to dark gray and the text color to white
-        mainUI.setBackground(Color.DARK_GRAY);
-        buttonList.setBackground(Color.DARK_GRAY);
-        title.setForeground(Color.WHITE);
-        subtitle.setForeground(Color.WHITE);
-        titleCard.setBackground(Color.DARK_GRAY);
-
-
-        //setting button colors to black and text to white
-        goToUserGuessing.setForeground(Color.WHITE);
-        goToUserGuessing.setBackground(Color.BLACK);
-        goToCompGuessing.setForeground(Color.WHITE);
-        goToCompGuessing.setBackground(Color.BLACK);
-        goToInstructions.setForeground(Color.WHITE);
-        goToInstructions.setBackground(Color.BLACK);
+        //initialize computer mode variables;
+        initComputer();
         
-        //adding button hover effect to change the colour of the button
-        goToUserGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) { //if mouse is hovering button, set the background color to cyan
-                goToUserGuessing.setBackground(Color.CYAN);
+        int results[] = new int[2];
+        int numOfGuesses = 0;
+
+        //demo code
+        //guesses until computer gets it right
+        do{
+            numOfGuesses++;
+            
+            //first run uses the already set guess
+            if(numOfGuesses==1){
+            	results = getHint(guess, code);
+            } else{
+                //get the new guess based off the hints of the current guess
+            	guess = computerGuess(results);
             }
-            public void mouseExited(java.awt.event.MouseEvent evt) { //if mouse is not hovering, set background to black
-                goToUserGuessing.setBackground(Color.BLACK);
-            }
-        });
-        goToCompGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                goToCompGuessing.setBackground(Color.CYAN);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                goToCompGuessing.setBackground(Color.BLACK);
-            }
-        });
-        goToInstructions.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                goToInstructions.setBackground(Color.CYAN);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                goToInstructions.setBackground(Color.BLACK);
-            }
-        });
 
 
+            //get the hints based off the new guess and the answer
+        	results = getHint(guess, code);
 
-        //making the first button change so that the user has to enter a name. Adds a textfield and submit button when the first button is pressed
-        goToUserGuessing.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //remove the original button
-                comboUserName.remove(goToUserGuessing);
-                //add a text field for entering name
-                JTextField enterName = new JTextField();
-                enterName.setText("Enter Player Name..."); //adding placeholder text
+            //print the tried combination
+            System.out.println("Guess num: " + numOfGuesses);
+            System.out.println(guess);
+            System.out.println("Black pins: " + results[0]);
+            System.out.println("White pins: " + results[1]);
+            System.out.println("------------");
+            System.out.println();
+        }while(results[0]!=4); //4 black pins mean the answer was reached
+        
+        System.out.println("Total # of guesses: " + numOfGuesses);
+        System.out.println("Answer is " + guess);
+        
+    }
 
-                //when the player clicks the textfield, removes the placeholder text
-                enterName.addFocusListener(new FocusListener() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
+    /**initComputer method()
+	 * 
+	 * initComputer stands for initialize computer. This method resets all the
+     * variables in preperation for a new game run. It sets the code with user input
+	 *
+	 * LOCAL VARIABLES
+	 * combination - ArrayList<Character>
+	 * 
+	 * @param n/a
+	 * @return n/a
+     * @throws IOException
+	 */
+    public static void initComputer()throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //empties the arraylists
+        possibleCombinations.clear();
+        guess.clear();
+        code.clear();
 
-                        //empties the textfield if there is placeholder text inside
-                        if (enterName.getText().equals("Enter Player Name...")) {
-                            enterName.setText("");
-                            enterName.setForeground(Color.BLACK);
-                        }
+        //generates all possible outcomes to fill up possibleCombinations arraylist
+        generateOutcomes();
+
+        //starting initial guess (can be anything)
+        guess.add('G');
+        guess.add('G');
+        guess.add('R');
+        guess.add('R');
+
+        //input for setting the code
+        System.out.println("Setting the Code: Options - G, R, B, Y, O, P");
+        for(int i = 0; i < 4; i++){
+            System.out.println("Enter Letter #" + (i+1));
+            code.add(br.readLine().charAt(0));
+        }
+    }
+
+    
+	/**generateOutcomes method()
+	 * 
+	 * This method generates every possible combination of the 6 colours within
+     * the COLORS array in 4 slots. It adds each of these combinations into
+     * a combination arraylist, and that arraylist gets added into a 2d array 
+     * called possibleCombinations. This arraylist is every possible combination 
+     * for the game.
+	 *
+	 * LOCAL VARIABLES
+	 * combination - ArrayList<Character>
+	 * 
+	 * @param n/a
+	 * @return n/a
+	 */
+    
+    public static void generateOutcomes(){
+        for (int a = 0; a < COLORS.length; a++) {
+            for (int b = 0; b < COLORS.length; b++) {
+                for (int c = 0; c < COLORS.length; c++) {
+                    for (int d = 0; d < COLORS.length; d++) {
+                        ArrayList<Character> combination = new ArrayList<>();
+                        combination.add(COLORS[a]);
+                        combination.add(COLORS[b]);
+                        combination.add(COLORS[c]);
+                        combination.add(COLORS[d]);
+                        possibleCombinations.add(combination);
                     }
-                    @Override
-                    public void focusLost(FocusEvent e) {
-
-                        //places the placeholder text if there is nothing inside
-                        if (enterName.getText().isEmpty()) {
-                            enterName.setForeground(Color.GRAY);
-                            enterName.setText("Enter Player Name...");
-                        }
-                    }
-                });
-
-                //setting the font inside the textfield
-                enterName.setFont(customFont);
-
-                //adding the textfield to the place the button user to be in
-                comboUserName.add(enterName, BorderLayout.CENTER);
-
-                // Add a button beside the text field
-                JButton submitButton = new JButton("begin");
-                submitButton.setBackground(Color.gray); //background colour
-                submitButton.setForeground(Color.white); //text colour
-
-                //adding the function for the submit name button
-                submitButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        
-                        String playerName = enterName.getText(); //retrieve the name from the textfield
-                        if(playerName.equals("Enter Player Name...")){ //if the name is still the placeholder, prompt user to enter a name before playing
-                            enterName.setBackground(Color.RED); //set the textfield to red if no name is entered
-                        } else{
-                            dispose(); //if a name is entered, close the main menu
-                            Merge merge = new Merge(playerName); //open the player guessing mode with constructor parameters of the player's name
-                        }
-                    }
-                });
-                comboUserName.add(submitButton, BorderLayout.EAST); //adding the submit button to the planel the first button was
-
-                //update the panel to see the new textfield and button
-                comboUserName.revalidate();
-                comboUserName.repaint();
-            }
-        });
-
-        goToInstructions.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                InstructionsManual instructions = new InstructionsManual();
-            }
-        });
-
-
-        //making the changing text in the title
-        //have a timer tick and a method run every 40 miliseconds
-        Timer timer = new Timer(40, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try{
-
-                    currentIndex = (currentIndex + 1) % CHARACTERSO.length();//current index increases by one and when it reaches the end, modulus changes the number to go back to 0
-                    title.setText("C" + String.valueOf(CHARACTERSO.charAt(currentIndex))+"debr" + String.valueOf(CHARACTERSE.charAt(currentIndex))+ String.valueOf(CHARACTERSA.charAt(currentIndex)) + "ker"); //take a randomized letter from the three arrays made before
-                }catch(Exception error){
-                    System.out.println(error);
                 }
             }
-        });
-        timer.start(); //start the timer
-
-
-        //adding all the components to the JFrame
-        titleCard.add(title);
-        titleCard.add(subtitle);
-        comboUserName.add(goToUserGuessing);
-        buttonList.add(comboUserName);
-        buttonList.add(goToCompGuessing);
-        buttonList.add(goToInstructions);
-        mainUI.add(titleCard);
-        mainUI.add(buttonList);
-        add(mainUI, BorderLayout.CENTER);
+        }
     }
 
-    public static void main(String[]args){
-        //Merge merge = new Merge();
-        //merge.genCode();
-        MainMenu mainMenu = new MainMenu();
+    /**getHint method()
+	 * 
+	 * This method is used to check two combinations and to return the hints between them.
+     * The method makes a copy of both since we will be removing values for counting. After
+     * If colours are the same in the same index between the two combinations, increment 
+     * hints[0] representing black pins. Then it removes it from the array so when we count
+     * whites it doesn't double count. For white, we loop through the remaining combinations
+     * and use .contains() to check if the same colour is atleast somewhere in the combination
+	 * 
+     * LOCAL VARIABLES
+	 * guessCopy - ArrayList<Character>
+	 * codeCopy - ArrayList<Character>
+     * 
+	 * @param:
+     * ArrayList<Character>guess
+     * ArrayList<Character>compareCode
+     * 
+	 * @return int[]
+	 */
+    public static int[] getHint(ArrayList<Character> guess, ArrayList<Character>compareCode) {
+        int hints [] = new int[2]; //# of pins are stored in the array. [0] represents black, [1] represents white
+        
+        //creating a copy of the guess combination and the answer combination
+        ArrayList<Character>guessCopy = new ArrayList<Character>();
+        ArrayList<Character>codeCopy = new ArrayList<Character>();
+        for(int i = 0; i < guess.size(); i++){
+            guessCopy.add(guess.get(i));
+            codeCopy.add(compareCode.get(i));
+        }   
+
+        //checks for same colour between the two lists in the same index
+        for(int i = 0; i < guessCopy.size(); i++){
+            if(guessCopy.get(i)==codeCopy.get(i)){
+                hints[0]++; //adds 1 black pin
+                guessCopy.remove(i); //removes the colour from both arrays so when we count white, it does not double count
+                codeCopy.remove(i);
+                i--; //when we remove a colour, all values shift in index by 1 back, so we have to follow by decrementing too
+            }
+        }
+
+        //checks for if the colour from the guess is atleast contained in the code
+        for(int i = 0; i < guessCopy.size(); i++){
+            if(codeCopy.contains(guessCopy.get(i))){
+                hints[1]++; //adds 1 white pin
+                codeCopy.remove(guessCopy.get(i));
+                guessCopy.remove(i);
+                i--; 
+            }
+        }
+
+        //returns the pins
+        return hints;
     }
+
+
+    /**computerGuess method()
+	 * 
+	 * This method is used to generate the next guest and eventually reach the answer.
+     * The method cycles through all possible combinations and then calls the getHint
+     * method between the guess and the possible combination. Like a detective, it will
+     * see if the possibleCombination will produce the exact same hint as the answer.
+     * If it doesn't, the combination is no longer possible at all and is removed from
+     * the list. The next guess should be any value still remaining in the possible
+     * combinations. 
+     *  
+     * 
+	 * @param:
+     * int hints[]
+     * 
+	 * @return ArrayList<Character>
+	 */
+    public static ArrayList<Character> computerGuess(int hints[]){
+        //cycle through all possible combinations
+        for(int i = 0; i < possibleCombinations.size(); i++){
+            
+            //get the hints between the guess and every possible combination.
+            int results[] = getHint(guess, possibleCombinations.get(i));
+
+            //compare if hints generated between the guess-code and the guess-possibleCombination are the same
+            //if the posisble combination does not generate the same hints, it cannot possibly be
+            //the answer so we remove it from the arraylist of possible combinations 
+            if( (results[0] != hints[0]) || (results[1] != hints[1]) ){
+                possibleCombinations.remove(i);
+                i--; //when you remove a value from arraylist, all indexes shift back by one so you have to do the same with index
+            }
+        }
+        //set guess as one of the possible combinations, in this case, the first
+        return possibleCombinations.get(0);
+        
+    }
+    
+    public static ArrayList<Character> intermediateComputerGuess(int hints[]) {
+    	if(Math.random()>0.9){ //10% of not removing all non-possible combinations
+    		return possibleCombinations.get((int) Math.random());
+    	} else{
+    		return computerGuess(hints);
+    	}
+    }
+    
+    public static ArrayList<Character> beginnerComputerGuess(int hints[]) {
+    	if(Math.random()>0.9){ //10% of not removing all non-possible combinations
+    		return possibleCombinations.get((int) Math.random());
+    	} else{
+    		return computerGuess(hints);
+    	}
+    }
+
 }
