@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -78,13 +79,13 @@ public class UserGUI extends JFrame implements ActionListener{
         boxes.add(box4);
         ls.setBorder(new EmptyBorder(10, 10, 10, 30));
         rs.setBorder(new EmptyBorder(10, 30, 10, 30));
-        rPin.setBackground(Color.red);
-        gPin.setBackground(Color.green);
-        bPin.setBackground(Color.blue);
+        rPin.setBackground(new Color(253, 104, 104));
+        gPin.setBackground(new Color(154, 246, 142, 240));
+        bPin.setBackground(new Color(85, 171, 255));
         bPin.setForeground(Color.white);
-        yPin.setBackground(Color.yellow);
-        oPin.setBackground(new Color(255, 111, 0));
-        pPin.setBackground(new Color(255, 125, 216));
+        yPin.setBackground(new Color(248, 233, 159));
+        oPin.setBackground(new Color(243, 162, 102));
+        pPin.setBackground(new Color(255, 174, 228));
 
 
         desc.setFont(new Font("Arial", Font.PLAIN, 60));
@@ -124,10 +125,14 @@ public class UserGUI extends JFrame implements ActionListener{
         ls.add(umb);
         ls.add(cfc);
         ls.add(lb);
-        rs.setBackground(new Color(95, 194, 246));
-        ls.setBackground(new Color(123, 198, 239));
-
-
+        rs.setBackground(new Color(147, 217, 255));
+        ls.setBackground(new Color(126, 208, 253));
+        UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
+        UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(
+                "Arial", Font.BOLD, 50)) );
+        UIManager.put("OptionPane.buttonFont", new FontUIResource(new Font(
+                "Arial", Font.PLAIN, 50)));
+        win();
         for(JButton j:boxes){
             j.setText("?");
             j.setFocusPainted(false);
@@ -138,7 +143,7 @@ public class UserGUI extends JFrame implements ActionListener{
         rs.add(topRow);
         for (int i = 0; i < 10; i++) {
             rightRows[i] = new JPanel();
-            rightRows[i].setBackground(new Color(52, 132, 175));
+            rightRows[i].setBackground(new Color(143, 192, 243));
             rightRows[i].setLayout(rightRowsLayout);
             hintPanels[i] = new JPanel();
             hintPanels[i].setLayout(hlay);
@@ -169,7 +174,7 @@ public class UserGUI extends JFrame implements ActionListener{
 
                 rightRows[i].add(guessBoxes.get(i).get(j));
                 hintBoxes[i][j] = new RoundButton("");
-                hintBoxes[i][j].setBackground(new Color(26, 75, 131));
+                hintBoxes[i][j].setBackground(new Color(106, 157, 215));
                 hintBoxes[i][j].setFont(new Font("Arial", Font.PLAIN, 30));
                 hintPanels[i].add(hintBoxes[i][j]);
 
@@ -254,6 +259,7 @@ public class UserGUI extends JFrame implements ActionListener{
                     }
                     if (guesses == 10) {
                         gameOver();
+                        loss();
                     }
                 }
             }
@@ -354,23 +360,23 @@ public class UserGUI extends JFrame implements ActionListener{
             boxes.get(i).setEnabled(true);
             switch (code.get(i).toString()){
                 case "R":
-                    boxes.get(i).setBackground(Color.red);
+                    boxes.get(i).setBackground(new Color(253, 104, 104));
                     break;
                 case "G":
-                    boxes.get(i).setBackground(Color.green);
+                    boxes.get(i).setBackground(new Color(154, 246, 142, 240));
                     break;
                 case "B":
-                    boxes.get(i).setBackground(Color.blue);
+                    boxes.get(i).setBackground(new Color(85, 171, 255));
                     boxes.get(i).setForeground(Color.white);
                     break;
                 case "Y":
-                    boxes.get(i).setBackground(Color.yellow);
+                    boxes.get(i).setBackground(new Color(248, 233, 159));
                     break;
                 case "O":
-                    boxes.get(i).setBackground(new Color(255, 111, 0));
+                    boxes.get(i).setBackground(new Color(243, 162, 102));
                     break;
                 case "P":
-                    boxes.get(i).setBackground(new Color(255, 125, 216));
+                    boxes.get(i).setBackground(new Color(255, 174, 228));
                     break;
             }
         }
@@ -389,6 +395,7 @@ public class UserGUI extends JFrame implements ActionListener{
     public void renderFeedback(int[] hints){
         if(guess.equals(codeStr)){
             gameOver();
+            win();
             over=true;
         }
         else {
@@ -410,4 +417,14 @@ public class UserGUI extends JFrame implements ActionListener{
             }
         }
     }
+
+
+    private void win(){
+        JOptionPane.showMessageDialog(null, "Congratulations, You won!", "You WIN", JOptionPane.INFORMATION_MESSAGE);
+
+    }
+    private void loss(){
+        JOptionPane.showMessageDialog(null, "Unfortunately, you lost.","Defear", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 }

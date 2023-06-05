@@ -9,8 +9,6 @@ import java.util.HashMap;
 public class CGUI extends JFrame implements ActionListener{
     static ArrayList<Character> code = new ArrayList<>();
     static String codeStr = "";
-    static String guess;
-    static int[] freqArr = new int[6];
     boolean state = false;
     static int guesses = 0;
 
@@ -18,10 +16,6 @@ public class CGUI extends JFrame implements ActionListener{
     JPanel rs = new JPanel();//rightside
 
     JPanel topRow = new JPanel();
-
-    Button[][] opnBoxes = new Button[10][4];
-
-    JPanel compHintPan = new JPanel(); //computer sets the hints for the user
     JPanel resetAndCountPan = new JPanel();//for reset button and guess count
 
     static String lastCom;
