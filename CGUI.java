@@ -1,10 +1,12 @@
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class UserGUI extends JFrame implements ActionListener{
+public class CGUI extends JFrame implements ActionListener{
     static ArrayList<Character> code = new ArrayList<>();
     static String codeStr = "";
     static String guess;
@@ -17,6 +19,9 @@ public class UserGUI extends JFrame implements ActionListener{
 
     JPanel topRow = new JPanel();
 
+    Button[][] opnBoxes = new Button[10][4];
+
+    JPanel compHintPan = new JPanel(); //computer sets the hints for the user
     JPanel resetAndCountPan = new JPanel();//for reset button and guess count
 
     static String lastCom;
@@ -26,12 +31,9 @@ public class UserGUI extends JFrame implements ActionListener{
     JLabel lb = new JLabel("Leaderboard");
     JLabel lbName = new JLabel("Name");//leaderboard name
     JLabel lbScore = new JLabel("Score");
-    JButton rPin = new JButton("R"); //red
-    JButton gPin = new JButton("G"); //green
-    JButton bPin = new JButton("B"); //blue
-    JButton yPin = new JButton("Y"); //yellow
-    JButton oPin = new JButton("O"); //orange
-    JButton pPin = new JButton("P"); //pink
+    JButton blackPin = new JButton("B"); //black
+    JButton whitePin = new JButton("W"); //white
+
     JButton clear = new JButton("clear");
     JButton submit = new JButton("submit");
     JButton reset = new JButton("restart");
@@ -41,7 +43,7 @@ public class UserGUI extends JFrame implements ActionListener{
     ArrayList<ArrayList<JButton>> guessBoxes = new ArrayList<>();
     JPanel [] hintPanels = new JPanel[10];
     JPanel [] rightRows = new JPanel[10];
-    RoundButton [][] hintBoxes = new RoundButton[10][4];
+    ArrayList<ArrayList<RoundButton>> hintBoxes = new ArrayList<>();
     JButton box1 = new JButton();
     JButton box2 = new JButton();
     JButton box3 = new JButton();
@@ -59,32 +61,24 @@ public class UserGUI extends JFrame implements ActionListener{
     GridLayout left = new GridLayout(6, 1);
     GridLayout topRowLayout = new GridLayout(1, 4);
     GridLayout right = new GridLayout(12, 1);
-    GridLayout hlay = new GridLayout(2, 2); //hints lyaout
+    GridLayout hlay = new GridLayout(2, 2); //computer guess layout
     GridLayout rcp = new GridLayout(1, 3);//gridlayout for  reset and count panel
     GridLayout rightRowsLayout = new GridLayout(1, 6);
 
-    public UserGUI(){
-        setSize(1200 ,1200);
+    public CGUI(){
+        setSize(1400 ,1400);
         setTitle("Codebreaker");
-        colours.add(rPin);
-        colours.add(gPin);
-        colours.add(bPin);
-        colours.add(yPin);
-        colours.add(oPin);
-        colours.add(pPin);
+        colours.add(blackPin);
+        colours.add(whitePin);
         boxes.add(box1);
         boxes.add(box2);
         boxes.add(box3);
         boxes.add(box4);
         ls.setBorder(new EmptyBorder(10, 10, 10, 30));
         rs.setBorder(new EmptyBorder(10, 30, 10, 30));
-        rPin.setBackground(Color.red);
-        gPin.setBackground(Color.green);
-        bPin.setBackground(Color.blue);
-        bPin.setForeground(Color.white);
-        yPin.setBackground(Color.yellow);
-        oPin.setBackground(new Color(255, 111, 0));
-        pPin.setBackground(new Color(255, 125, 216));
+        blackPin.setBackground(Color.black);
+        whitePin.setBackground(Color.white);
+        blackPin.setForeground(Color.white);
 
 
         desc.setFont(new Font("Arial", Font.PLAIN, 60));
@@ -102,8 +96,8 @@ public class UserGUI extends JFrame implements ActionListener{
         reset.setFont(new Font("Arial", Font.PLAIN, 40));
         gs.setFont(new Font("Arial", Font.PLAIN, 60));
         umb.setFont(new Font("Arial", Font.PLAIN, 60));
-        cfc.setFont(new Font("Arial", Font.PLAIN, 50));
-        lb.setFont(new Font("Arial", Font.PLAIN, 50));
+        cfc.setFont(new Font("Arial", Font.PLAIN, 60));
+        lb.setFont(new Font("Arial", Font.PLAIN, 60));
         lbName.setFont(new Font("Arial", Font.PLAIN, 30));
         lbScore.setFont(new Font("Arial", Font.PLAIN, 30));
 
@@ -127,15 +121,7 @@ public class UserGUI extends JFrame implements ActionListener{
         rs.setBackground(new Color(95, 194, 246));
         ls.setBackground(new Color(123, 198, 239));
 
-
-        for(JButton j:boxes){
-            j.setText("?");
-            j.setFocusPainted(false);
-            j.setEnabled(false);
-            topRow.add(j);
-        }
         rs.setLayout(right);
-        rs.add(topRow);
         for (int i = 0; i < 10; i++) {
             rightRows[i] = new JPanel();
             rightRows[i].setBackground(new Color(52, 132, 175));
@@ -143,9 +129,10 @@ public class UserGUI extends JFrame implements ActionListener{
             hintPanels[i] = new JPanel();
             hintPanels[i].setLayout(hlay);
             guessBoxes.add(new ArrayList<>());
-            if(i<=5){
+            hintBoxes.add(new ArrayList<>());
+            if(i<=1){
                 RoundButton rb = new RoundButton(colours.get(i).getText());
-                rb.setFont(new Font("Arial", Font.PLAIN, 60));
+                rb.setFont(new Font("Arial", Font.PLAIN, 50));
                 rb.addActionListener(this);
                 rb.setBackground(colours.get(i).getBackground());
                 rb.setForeground(colours.get(i).getForeground());
@@ -161,17 +148,18 @@ public class UserGUI extends JFrame implements ActionListener{
             for (int j = 0; j < 4; j++) {
                 RoundButton temp = new RoundButton("");
                 temp.setFocusPainted(false);
-                temp.addActionListener(this);
                 temp.setFont(new Font("Arial", Font.PLAIN, 40));
-                temp.setBackground(Color.black);
+                temp.setBackground(new Color(26, 47, 131));
 
                 guessBoxes.get(i).add(temp);
 
                 rightRows[i].add(guessBoxes.get(i).get(j));
-                hintBoxes[i][j] = new RoundButton("");
-                hintBoxes[i][j].setBackground(new Color(26, 75, 131));
-                hintBoxes[i][j].setFont(new Font("Arial", Font.PLAIN, 30));
-                hintPanels[i].add(hintBoxes[i][j]);
+
+                hintBoxes.get(i).add(new RoundButton(" "));
+                hintBoxes.get(i).get(j).setBackground(new Color(26, 75, 131));
+                hintBoxes.get(i).get(j).setFont(new Font("Arial", Font.PLAIN, 18));
+                hintBoxes.get(i).get(j).addActionListener(this);
+                hintPanels[i].add(hintBoxes.get(i).get(j));
 
             }
             rightRows[i].add(hintPanels[i]);
@@ -186,20 +174,13 @@ public class UserGUI extends JFrame implements ActionListener{
         add(rs);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        showCurrentRow();
+
     }
 
     public static void main(String[] args) {
-        UserGUI frame = new UserGUI();
-        genCode();
+        CGUI frame = new CGUI();
         System.out.println(codeStr);
         over = false;
-        colourMap.put('G', 0);
-        colourMap.put('R', 1);
-        colourMap.put('B', 2);
-        colourMap.put('Y', 3);
-        colourMap.put('O', 4);
-        colourMap.put('P', 5);
     }
 
     Color oldColour;
@@ -215,47 +196,30 @@ public class UserGUI extends JFrame implements ActionListener{
             oldForeCOlour = temp.getForeground();
         }
         if(!over) {
-            int index = guessBoxes.get(guesses).indexOf(event.getSource());
+            int index = hintBoxes.get(guesses).indexOf(event.getSource());
 
             if (state && index != -1) {
-                JButton temp = guessBoxes.get(guesses).get(index);
+                JButton temp = hintBoxes.get(guesses).get(index);
                 temp.setText(lastCom);
                 temp.setBackground(oldColour);
                 temp.setForeground(oldForeCOlour);
             }
 
             if (command.equals("clear")) {
-                for (JButton j : guessBoxes.get(guesses)) {
+                for (JButton j : hintBoxes.get(guesses)) {
                     j.setText("");
-                    j.setBackground(Color.white);
+                    j.setBackground(new Color(26, 75, 131));
                     j.setForeground(Color.black);
                 }
             }
             if (command.equals("submit")) {
-                ArrayList<Character> guessList = new ArrayList<>();
-                boolean valid = false;
-                try {
-                    guessList = getGuess();
-                    valid = true;
-                } catch (StringIndexOutOfBoundsException error) {
-                    whiteLabel.setText("Please enter valid guess");
-                    valid = false;
+                hints = getHint();
+                guesses++;
+                if(hints[0]==4){
+                    gameOver();
                 }
-                if (valid) {
-
-                    guessCount.setText("guesses: " + guesses);
-
-
-                    hints = getHint(guessList);
-                    renderFeedback(hints);
-                    guesses++;
-                    if (!over) {
-                        showCurrentRow();
-                    }
-                    if (guesses == 10) {
-                        gameOver();
-                    }
-                }
+                for(int i: hints)
+                    System.out.println(i);
             }
         }
         if(command.equals("restart")){
@@ -265,68 +229,14 @@ public class UserGUI extends JFrame implements ActionListener{
 
     private static final char[] COLORS = {'G', 'R', 'B', 'Y', 'O', 'P'};
 
-    public static String genCode(){
-        freqArr = new int[6];
-        codeStr = "";
-        code = new ArrayList<>();
-        for (int i = 0; i < 4; i++) { //randomly generate the codeStr
-            int tempNum = ((int) (Math.random() * 6));
-            char tempChar = COLORS[tempNum];
-            codeStr += tempChar; //add to codeStr string
-            code.add(tempChar); //add to arraylist of chars
-            freqArr[tempNum]++;
-        }
-
-        return codeStr;
-    }
     static boolean over = false;
     static HashMap<Character, Integer> colourMap = new HashMap<>();
 
-    public static int[] getHint(ArrayList<Character> guess) {
-        int[] hints = new int[2];
-
-        int[] guessFreq = new int[6];
-        int[] limit = new int[6];
-
-        for (int i = 0; i < 6; i++) {
-            limit[i] = freqArr[i];
-        }
-
-        for (char c : guess) {
-            int temp = colourMap.get(c);
-            guessFreq[temp]++;
-        }
-
-        for (int j = 0; j < 4; j++) {
-            if (guess.get(j)== code.get(j)) {
-                char c = guess.get(j);
-                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                    limit[colourMap.get(c)]--;
-                    guessFreq[colourMap.get(c)]--;
-                    hints[0]++;
-                }
-            }
-        }
-
-        for (int j = 0; j < 4; j++) {
-            char c = guess.get(j);
-            if (code.contains(c) && guess.get(j)!=code.get(j)) {
-                if(limit[colourMap.get(c)]>0 && guessFreq[colourMap.get(c)]>0) {
-                    limit[colourMap.get(c)]--;
-                    guessFreq[colourMap.get(c)]--;
-                    hints[1]++;
-                }
-            }
-        }
-
-        return hints;
-    }
 
     public void restart(){
         guesses=0;
         over=false;
         guessCount.setText("guesses: 0");
-        codeStr = genCode();
         System.out.println(codeStr);
         whiteLabel.setText("");
         blackLabel.setText("");
@@ -336,78 +246,33 @@ public class UserGUI extends JFrame implements ActionListener{
         for(ArrayList<JButton> j : guessBoxes){
             for(JButton jb : j){
                 jb.setText("");
-                jb.setBackground(Color.black);
+                jb.setBackground(new Color(26, 47, 131));
             }
         }
-        for(JButton[] j:hintBoxes){
+        for(ArrayList<RoundButton> j:hintBoxes){
             for(JButton jl:j){
                 jl.setText("");
+                jl.setBackground(new Color(26, 75, 131));
             }
         }
         blackLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        showCurrentRow();
+
     }
 
     public void gameOver(){
-        for (int i = 0; i < 4; i++) {
-            boxes.get(i).setText(code.get(i).toString());
-            boxes.get(i).setEnabled(true);
-            switch (code.get(i).toString()){
-                case "R":
-                    boxes.get(i).setBackground(Color.red);
-                    break;
-                case "G":
-                    boxes.get(i).setBackground(Color.green);
-                    break;
-                case "B":
-                    boxes.get(i).setBackground(Color.blue);
-                    boxes.get(i).setForeground(Color.white);
-                    break;
-                case "Y":
-                    boxes.get(i).setBackground(Color.yellow);
-                    break;
-                case "O":
-                    boxes.get(i).setBackground(new Color(255, 111, 0));
-                    break;
-                case "P":
-                    boxes.get(i).setBackground(new Color(255, 125, 216));
-                    break;
-            }
-        }
+        //TODO computer prints the code?
         over = true;
     }
 
-    public ArrayList<Character> getGuess(){
-        guess="";
-        ArrayList<Character> guessList = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            guess+=guessBoxes.get(guesses).get(i).getText();
-            guessList.add(guessBoxes.get(guesses).get(i).getText().charAt(0));
-        }
-        return guessList;
-    }
-    public void renderFeedback(int[] hints){
-        if(guess.equals(codeStr)){
-            gameOver();
-            over=true;
-        }
-        else {
-            System.out.println("black: " + hints[0] + " whites: " + hints[1]);
-            for (int i = 0; i < hints[0]; i++) {
-                hintBoxes[guesses][i].setBackground(Color.black);
-            }
-            for (int i = hints[0]; i < hints[1]+hints[0]; i++) {
-                if(hints[0]<4){
-                    hintBoxes[guesses][i].setBackground(Color.white);
-                }
+    public int[] getHint(){
+        int[] hints = new int[2];
+        for(JButton j : hintBoxes.get(guesses)){
+            if(j.getText().equals("B")){
+                hints[0]++;
+            } else if(j.getText().equals("W")){
+                hints[1]++;
             }
         }
-    }
-    public void showCurrentRow(){
-        for (int i = 0; i < 4; i++) {
-            if(guesses<10) {
-                guessBoxes.get(guesses).get(i).setBackground(Color.white);
-            }
-        }
+        return hints;
     }
 }
