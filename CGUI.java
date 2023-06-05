@@ -170,6 +170,12 @@ public class CGUI extends JFrame implements ActionListener{
         resetAndCountPan.add(clear);
         resetAndCountPan.add(reset);
         rs.add(resetAndCountPan);
+        String[] comDiffs = {"basic", "intermediate", "expert guesser", "Select AI intelligence level..."};
+        JComboBox diffs = new JComboBox(comDiffs);
+        diffs.setFont(new Font("Arial", Font.PLAIN, 40));
+        diffs.setSelectedIndex(3);
+        diffs.addActionListener(this);
+        rs.add(diffs);
         add(ls);
         add(rs);
         setVisible(true);
@@ -188,6 +194,22 @@ public class CGUI extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent event) {
         int[] hints = new int[2];
         String command = event.getActionCommand();
+        if(command.equals("comboBoxChanged")){
+            int level = 0;
+            JComboBox cb = (JComboBox) event.getSource();
+            switch ((String)cb.getSelectedItem()){
+                case "basic":
+                    level = 1;
+                    break;
+                case "intermediate":
+                    level = 2;
+                    break;
+                case "expert guesser":
+                    level = 3;
+                    break;
+            }
+            System.out.println("Ai level: " + level);
+        }
         if(colours.contains(event.getSource())){
             state = true;
             lastCom = colours.get(colours.indexOf(event.getSource())).getText();
@@ -215,9 +237,6 @@ public class CGUI extends JFrame implements ActionListener{
             if (command.equals("submit")) {
                 hints = getHint();
                 guesses++;
-                if(hints[0]==4){
-                    gameOver();
-                }
                 for(int i: hints)
                     System.out.println(i);
             }
@@ -260,7 +279,10 @@ public class CGUI extends JFrame implements ActionListener{
     }
 
     public void gameOver(){
-        //TODO computer prints the code?
+        for (int i = 0; i < 4; i++) {
+            boxes.get(i).setText(code.get(i).toString());
+            boxes.get(i).setEnabled(true);
+        }
         over = true;
     }
 
