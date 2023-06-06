@@ -8,16 +8,17 @@ import java.io.FileWriter;
 import java.util.*;
 
 public class CodeBreakerGUI extends JFrame implements ActionListener {
+    Color lightBlue = new Color(143, 192, 243);
     private static ArrayList<ArrayList<Character>> possibleCombinations = new ArrayList<>();
     private static ArrayList<Character> code = new ArrayList<>();
     private static ArrayList<Character> guess = new ArrayList<>();
-    private boolean state = true;
+    private boolean state = false;
     private String playerName = "";
     private int level = 0;
     private static int numOfGuesses = 0;
     HashMap<String, Color> buttonColours = new HashMap<>();
-    JPanel ls = new JPanel();// leftside
-    JPanel rs = new JPanel();// rightside
+    JPanel leftSide = new JPanel();// leftside
+    JPanel rightSide = new JPanel();// rightside
 
     JPanel topRow = new JPanel();
     JPanel resetAndCountPan = new JPanel();// for reset button and guess count
@@ -63,13 +64,13 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     JTextArea leaderboardArea = new JTextArea();
     JPanel buttonList = new JPanel();
 
-    ArrayList<JButton> bw = new ArrayList<>();
-    GridLayout mlay = new GridLayout(1, 2); // main layout
-    GridLayout left = new GridLayout(2, 1);
+    ArrayList<JButton> hintPegs = new ArrayList<>();
+    GridLayout mainLayout = new GridLayout(1, 2); // main layout
+    GridLayout leftLayout = new GridLayout(2, 1);
     GridLayout topRowLayout = new GridLayout(1, 4);
     GridLayout right = new GridLayout(12, 1);
-    GridLayout hlay = new GridLayout(2, 2); // hints lyaout
-    GridLayout rcp = new GridLayout(1, 3);// gridlayout for reset and count panel
+    GridLayout hintLayout = new GridLayout(2, 2); // hints lyaout
+    GridLayout controlLayout = new GridLayout(1, 3);// gridlayout for reset and count panel
     GridLayout rightRowsLayout = new GridLayout(1, 6);
     String gameMode = "userGuess";
 
@@ -77,7 +78,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         initUserGuess();
         this.playerName = playerName;
         this.gameMode = selectedGameMode;
-        setSize(1200, 1200);
+        setSize(800, 950);
         setTitle("Codebreaker");
         colours.add(rPin);
         colours.add(gPin);
@@ -85,14 +86,14 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         colours.add(yPin);
         colours.add(oPin);
         colours.add(pPin);
-        bw.add(whitePin);
-        bw.add(blackPin);
+        hintPegs.add(whitePin);
+        hintPegs.add(blackPin);
         boxes.add(box1);
         boxes.add(box2);
         boxes.add(box3);
         boxes.add(box4);
-        ls.setBorder(new EmptyBorder(10, 10, 10, 30));
-        rs.setBorder(new EmptyBorder(10, 30, 10, 30));
+        leftSide.setBorder(new EmptyBorder(10, 10, 10, 30));
+        rightSide.setBorder(new EmptyBorder(10, 30, 10, 30));
         rPin.setBackground(new Color(253, 104, 104));
         gPin.setBackground(new Color(154, 246, 142, 240));
         bPin.setBackground(new Color(85, 171, 255));
@@ -112,23 +113,23 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         leaderboard.setAlignmentX(JTextArea.CENTER_ALIGNMENT);
         leaderboard.setAlignmentY(JTextArea.CENTER_ALIGNMENT);
 
-        desc.setFont(new Font("Arial", Font.PLAIN, 60));
-        pinLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        fLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        box1.setFont(new Font("Arial", Font.PLAIN, 60));
-        box2.setFont(new Font("Arial", Font.PLAIN, 60));
-        box3.setFont(new Font("Arial", Font.PLAIN, 60));
-        box4.setFont(new Font("Arial", Font.PLAIN, 60));
-        blackLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        whiteLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        clear.setFont(new Font("Arial", Font.PLAIN, 40));
-        submit.setFont(new Font("Arial", Font.PLAIN, 40));
-        guessCount.setFont(new Font("Arial", Font.PLAIN, 60));
-        reset.setFont(new Font("Arial", Font.PLAIN, 40));
-        instructionsButton.setFont(new Font("Arial", Font.PLAIN, 60));
-        crackCode.setFont(new Font("Arial", Font.PLAIN, 60));
-        compFindCode.setFont(new Font("Arial", Font.PLAIN, 50));
-        leaderboard.setFont(new Font("Arial", Font.PLAIN, 50));
+        desc.setFont(new Font("Arial", Font.PLAIN, 30));
+        pinLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+        fLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+        box1.setFont(new Font("Arial", Font.PLAIN, 30));
+        box2.setFont(new Font("Arial", Font.PLAIN, 30));
+        box3.setFont(new Font("Arial", Font.PLAIN, 30));
+        box4.setFont(new Font("Arial", Font.PLAIN, 30));
+        blackLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+        whiteLabel.setFont(new Font("Arial", Font.PLAIN, 30));
+        clear.setFont(new Font("Arial", Font.PLAIN, 20));
+        submit.setFont(new Font("Arial", Font.PLAIN, 20));
+        guessCount.setFont(new Font("Arial", Font.PLAIN, 30));
+        reset.setFont(new Font("Arial", Font.PLAIN, 20));
+        instructionsButton.setFont(new Font("Arial", Font.PLAIN, 30));
+        crackCode.setFont(new Font("Arial", Font.PLAIN, 30));
+        compFindCode.setFont(new Font("Arial", Font.PLAIN, 25));
+        leaderboard.setFont(new Font("Arial", Font.PLAIN, 25));
         lbName.setFont(new Font("Arial", Font.PLAIN, 30));
         lbScore.setFont(new Font("Arial", Font.PLAIN, 30));
         compFindCode.addActionListener(this);
@@ -140,22 +141,22 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         submit.addActionListener(this);
         reset.addActionListener(this);
 
-        setLayout(mlay);
+        setLayout(mainLayout);
 
-        resetAndCountPan.setLayout(rcp);
+        resetAndCountPan.setLayout(controlLayout);
         topRow.setLayout(topRowLayout);
 
-        ls.setLayout(left);
+        leftSide.setLayout(leftLayout);
         buttonList.setLayout(new GridLayout(4, 1));
         buttonList.add(instructionsButton);
         buttonList.add(crackCode);
         buttonList.add(compFindCode);
         buttonList.add(leaderboard);
-        ls.add(buttonList);
-        ls.add(leaderboardArea);
+        leftSide.add(buttonList);
+        leftSide.add(leaderboardArea);
 
-        rs.setBackground(new Color(147, 217, 255));
-        ls.setBackground(new Color(126, 208, 253));
+        rightSide.setBackground(lightBlue);
+        leftSide.setBackground(new Color(126, 208, 253));
         UIManager.put("OptionPane.minimumSize", new Dimension(500, 500));
         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(
                 "Arial", Font.BOLD, 50)));
@@ -167,18 +168,22 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             j.setEnabled(false);
             topRow.add(j);
         }
-        rs.setLayout(right);
-        rs.add(topRow);
-        if (gameMode.equals("userGuess"))
+        rightSide.setLayout(right);
+        rightSide.add(topRow);
+        if (gameMode.equals("userGuess")) {
+
             drawUserMode();
-        else if (gameMode.equals("compGuess"))
+        }
+        else if (gameMode.equals("compGuess")) {
+
             drawCompMode();
+        }
         resetAndCountPan.add(submit);
         resetAndCountPan.add(clear);
         resetAndCountPan.add(reset);
-        rs.add(resetAndCountPan);
-        add(ls);
-        add(rs);
+        rightSide.add(resetAndCountPan);
+        add(leftSide);
+        add(rightSide);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         showCurrentRow();
@@ -190,13 +195,19 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         buttonColours.put("P", pPin.getBackground());
 
         displayLeaderBoard();
+
     }
 
     Color oldColour;
     Color oldForeCOlour;
 
     public void initUserGuess() {
+        guess.clear();
+
         genCode();
+        for(char c: guess){
+            System.out.println(c);
+        }
     }
 
     public void initComputer() {
@@ -216,15 +227,15 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         String command = event.getActionCommand();
         if (command.equals("Computer find code")) {
             restart();
-            rs.removeAll();
-            remove(rs);
+            rightSide.removeAll();
+            remove(rightSide);
             revalidate();
             repaint();
-            rs = new JPanel();
-            rs.setLayout(right);
+            rightSide = new JPanel();
+            rightSide.setLayout(right);
             drawCompMode();
-            rs.add(resetAndCountPan);
-            add(rs);
+            rightSide.add(resetAndCountPan);
+            add(rightSide);
             revalidate();
             repaint();
             initComputer();
@@ -234,16 +245,20 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         if (command.equals("Crack the code")) {
             initUserGuess();
             gameMode = "userGuess";
-            rs.removeAll();
-            remove(rs);
-            rs = new JPanel();
-            rs.setLayout(right);
-            rs.add(topRow);
+            rightSide.removeAll();
+            remove(rightSide);
+            rightSide = new JPanel();
+            rightSide.setLayout(right);
+            rightSide.add(topRow);
             drawUserMode();
-            rs.add(resetAndCountPan);
-            add(rs);
+            rightSide.add(resetAndCountPan);
+            add(rightSide);
             revalidate();
             repaint();
+            for (JButton jb : guessBoxes.get(0)) {
+                jb.setBackground(Color.white);
+
+            }
             genCode();
             System.out.println("crack the code mode");
         }
@@ -253,16 +268,16 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         }
         if (gameMode.equals("userGuess")) {
             if (colours.contains(event.getSource())) {
-                state = !state;
+                state = true;
                 lastCom = colours.get(colours.indexOf(event.getSource())).getText();
                 RoundButton temp = (RoundButton) event.getSource();
-                if (temp.getBackground() != new Color(147, 217, 255)) {
+                if (temp.getBackground() !=lightBlue) {
                     oldForeCOlour = temp.getForeground();
                     oldColour = temp.getBackground();
                 }
                 for (JButton jb : colours) {
                     if (jb.getText().equals(command)) {
-                        jb.setBackground(new Color(143, 192, 243));
+                        jb.setBackground(lightBlue);
                         jb.setForeground(oldColour);
 
                     } else {
@@ -274,7 +289,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 }
 
             }
-            if (!over) {
+            if (!over && state) {
                 int index = guessBoxes.get(numOfGuesses).indexOf(event.getSource());
 
                 if (index != -1) {
@@ -347,15 +362,15 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 }
                 System.out.println("Ai level: " + level);
             }
-            if (bw.contains(event.getSource())) {
+            if (hintPegs.contains(event.getSource())) {
                 System.out.println("colour select");
                 state = true;
-                lastCom = bw.get(bw.indexOf(event.getSource())).getText();
+                lastCom = hintPegs.get(hintPegs.indexOf(event.getSource())).getText();
                 JButton temp = (JButton) event.getSource();
                 oldColour = temp.getBackground();
                 oldForeCOlour = temp.getForeground();
             }
-            if (!over) {
+            if (!over && state) {
                 int index = hintBoxes.get(numOfGuesses).indexOf(event.getSource());
 
                 if (state && index != -1) {
@@ -380,23 +395,31 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                     } else {
                         hints = hintSelections(); // retrieve hints from user
                         numOfGuesses++;
+                        if(!over) {
+                            if (level == 1) {
+                                guess = beginnerComputerGuess(hints);
+                            }
+                            if (level == 2) {
+                                guess = intermediateComputerGuess(hints);
+                            }
+                            if (level == 3) {
+                                guess = expertComputerGuess(hints);
+                            }
+                            for (int i = 0; i < 4; i++) {
+                                guessBoxes.get(numOfGuesses).get(i)
+                                        .setBackground(buttonColours.get(String.valueOf(guess.get(i))));
+                                System.out.println("update");
+                                ;
+                            }
+                            if(hints[0]==4){
+                                over = true;
+                                compWin();
 
-                        if (level == 1) {
-                            guess = beginnerComputerGuess(hints);
-                        }
-                        if (level == 2) {
-                            guess = intermediateComputerGuess(hints);
-                        }
-                        if (level == 3) {
-                            guess = expertComputerGuess(hints);
+                            }
                         }
 
                         // update the colour
-                        for (int i = 0; i < 4; i++) {
-                            guessBoxes.get(numOfGuesses).get(i)
-                                    .setBackground(buttonColours.get(String.valueOf(guess.get(i))));
-                            ;
-                        }
+
                     }
 
                 }
@@ -463,6 +486,17 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     }
 
     public void restart() {
+        for (JButton jb : colours) {
+
+            jb.setBackground(buttonColours.get(jb.getText()));
+            jb.setForeground(Color.black);
+            if (jb.getText().equals("B")) jb.setForeground(Color.white);
+
+        }
+        for(JButton jb : boxes){
+            jb.setBackground(null);
+            jb.setEnabled(false);
+        }
         genCode();
         generateOutcomes();// regenerate possible combinations
         numOfGuesses = 0;
@@ -530,7 +564,6 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     public void renderFeedback(int[] hints) {
         if (hints[0] == 4) {
             gameOver();
-            renderFeedback(hints);
             win();
             over = true;
         } else {
@@ -555,17 +588,19 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     }
 
     public void drawUserMode() {
+        right = new GridLayout(12, 1);
+        rightSide.setLayout(right);
         for (int i = 0; i < 10; i++) {
             rightRows[i] = new JPanel();
             rightRows[i].setBackground(new Color(143, 192, 243));
             rightRows[i].setLayout(rightRowsLayout);
             hintPanels[i] = new JPanel();
-            hintPanels[i].setLayout(hlay);
+            hintPanels[i].setLayout(hintLayout);
             guessBoxes.add(new ArrayList<>());
             hintBoxes.add(new ArrayList<>());
             if (i <= 5) {
                 RoundButton rb = new RoundButton(colours.get(i).getText());
-                rb.setFont(new Font("Arial", Font.PLAIN, 60));
+                rb.setFont(new Font("Arial", Font.PLAIN, 20));
                 rb.addActionListener(this);
                 rb.setBackground(colours.get(i).getBackground());
                 rb.setForeground(colours.get(i).getForeground());
@@ -582,7 +617,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 RoundButton temp = new RoundButton("");
                 temp.setFocusPainted(false);
                 temp.addActionListener(this);
-                temp.setFont(new Font("Arial", Font.PLAIN, 40));
+                temp.setFont(new Font("Arial", Font.PLAIN, 20));
                 temp.setBackground(Color.black);
 
                 guessBoxes.get(i).add(temp);
@@ -590,35 +625,38 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 rightRows[i].add(guessBoxes.get(i).get(j));
                 hintBoxes.get(i).add(new RoundButton(""));
                 hintBoxes.get(i).get(j).setBackground(new Color(106, 157, 215));
-                hintBoxes.get(i).get(j).setFont(new Font("Arial", Font.PLAIN, 30));
+                hintBoxes.get(i).get(j).setFont(new Font("Arial", Font.PLAIN, 15));
                 hintPanels[i].add(hintBoxes.get(i).get(j));
 
             }
             rightRows[i].add(hintPanels[i]);
             rightRows[i].setBorder(new EmptyBorder(10, 0, 10, 0));
-            rs.add(rightRows[i]);
+            rightSide.add(rightRows[i]);
             leaderboardArea.setVisible(true);
             leaderboard.setVisible(true);
+            setSize(new Dimension(800, 950));
         }
     }
 
     public void drawCompMode() {
-
+        right = new GridLayout(14, 1);
+        rightSide.setLayout(right);
+        setSize(new Dimension(800, 1000));
         for (int i = 0; i < 10; i++) {
             rightRows[i] = new JPanel();
             rightRows[i].setBackground(new Color(52, 132, 175));
             rightRows[i].setLayout(rightRowsLayout);
             hintPanels[i] = new JPanel();
-            hintPanels[i].setLayout(hlay);
+            hintPanels[i].setLayout(hintLayout);
             guessBoxes.add(new ArrayList<>());
             hintBoxes.add(new ArrayList<>());
             if (i <= 1) {
-                RoundButton rb = new RoundButton(bw.get(i).getText());
-                rb.setFont(new Font("Arial", Font.PLAIN, 50));
+                RoundButton rb = new RoundButton(hintPegs.get(i).getText());
+                rb.setFont(new Font("Arial", Font.PLAIN, 15));
                 rb.addActionListener(this);
-                rb.setBackground(bw.get(i).getBackground());
-                rb.setForeground(bw.get(i).getForeground());
-                bw.set(i, rb);
+                rb.setBackground(hintPegs.get(i).getBackground());
+                rb.setForeground(hintPegs.get(i).getForeground());
+                hintPegs.set(i, rb);
                 rightRows[i].add(rb);
             } else {
                 JButton tempButton = new JButton();
@@ -630,7 +668,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             for (int j = 0; j < 4; j++) {
                 RoundButton temp = new RoundButton("");
                 temp.setFocusPainted(false);
-                temp.setFont(new Font("Arial", Font.PLAIN, 40));
+                temp.setFont(new Font("Arial", Font.PLAIN, 20));
                 temp.setBackground(new Color(26, 47, 131));
 
                 guessBoxes.get(i).add(temp);
@@ -646,22 +684,42 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             }
             rightRows[i].add(hintPanels[i]);
             rightRows[i].setBorder(new EmptyBorder(10, 0, 10, 0));
-            rs.add(rightRows[i]);
+            rightSide.add(rightRows[i]);
+
         }
         String[] comDiffs = { "basic", "intermediate", "expert guesser", "Select AI intelligence level..." };
         JComboBox diffs = new JComboBox(comDiffs);
-        diffs.setFont(new Font("Arial", Font.PLAIN, 40));
+        diffs.setFont(new Font("Arial", Font.PLAIN, 20));
         diffs.setSelectedIndex(3);
         diffs.addActionListener(this);
-        rs.add(diffs);
-
+        rightSide.add(diffs);
+        JLabel availColours = new JLabel("Possible colours:");
+        availColours.setFont(new Font("Arial", Font.PLAIN, 30));
+        JPanel acp = new JPanel();
+        GridLayout clay = new GridLayout(1, 6);
+        acp.setLayout(clay);
+        for(JButton j : colours){
+            acp.add(j);
+        }
+        rightSide.add(availColours);
+        rightSide.add(acp);
         leaderboardArea.setVisible(false);
         leaderboard.setVisible(false);
+
     }
 
     private void win() {
         JOptionPane.showMessageDialog(null, "Congratulations, You won!", "You WIN", JOptionPane.INFORMATION_MESSAGE);
         writeToLeaderBoard(playerName, numOfGuesses);
+    }
+
+    private void compWin(){
+        String s = "";
+        for(char c : guess){
+            s+=c;
+        }
+        JOptionPane.showMessageDialog(null, "The code is: " + s, "Your Code is:", JOptionPane.INFORMATION_MESSAGE);
+
     }
 
     private void loss() {
@@ -814,7 +872,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
 
     public static ArrayList<Character> intermediateComputerGuess(int hints[]) {
         if (Math.random() > 0.9) { // 10% of not removing all non-possible combinations
-            return possibleCombinations.get((int) Math.random());
+            return possibleCombinations.get((int) (Math.random()*possibleCombinations.size()));
         } else {
             return expertComputerGuess(hints);
         }
@@ -822,7 +880,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
 
     public static ArrayList<Character> beginnerComputerGuess(int hints[]) {
         if (Math.random() > 0.3) { // 70% of not removing all non-possible combinations
-            return possibleCombinations.get((int) Math.random());
+            return possibleCombinations.get((int) (Math.random() * possibleCombinations.size()));
         } else {
             return expertComputerGuess(hints);
         }
