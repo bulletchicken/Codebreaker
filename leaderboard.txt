@@ -1,0 +1,6 @@
+1 Jeremy - 3 guesses
+2 Eric - 4 guesses
+3 Mr.A - 3 guesses
+4 Hello - 5 guesses
+5 Yes - 6 guesses
+6 Yes - 8 guesses
