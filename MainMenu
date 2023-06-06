@@ -31,14 +31,14 @@ public class MainMenu extends JFrame {
     JPanel comboUserName = new JPanel();
     JPanel titleCard = new JPanel();
     JLabel title = new JLabel("Code Breaker");
-    JLabel subtitle = new JLabel("By Jeremy Su & Eric Chen");
+    JLabel subtitle = new JLabel("<html>By Jeremy Su & Eric Chen<br>Music by: Oscar Peterson</html>");
     JButton goToUserGuessing = new JButton("User Guessing");
-    JButton goToCompGuessing = new JButton("Computer Guessing");
     JButton goToInstructions = new JButton("Instructions");
 
     public MainMenu() {
 
         //adjusting the main window's settings
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Code Breaker - Home Screen");
         setSize(800, 800);
         setLocationRelativeTo(null); //centering the window on the screen on popup
@@ -47,7 +47,7 @@ public class MainMenu extends JFrame {
         setLayout(new BorderLayout());
 
         //setting the layouts for the components
-        GridLayout buttonsLayout = new GridLayout(3, 1);
+        GridLayout buttonsLayout = new GridLayout(2, 1);
         buttonsLayout.setVgap(10); //spacing out each of the buttons
         buttonList.setLayout(buttonsLayout); 
         comboUserName.setLayout(new BorderLayout()); //so a submit button and a textfield can be placed side by side
@@ -67,13 +67,11 @@ public class MainMenu extends JFrame {
 
         //removing the default border around the buttons
         goToUserGuessing.setBorderPainted(false);
-        goToCompGuessing.setBorderPainted(false);
         goToInstructions.setBorderPainted(false);
 
         //setting fonts of all the buttons
         Font customFont = new Font("Courier", Font.BOLD, 24);
         goToUserGuessing.setFont(customFont);
-        goToCompGuessing.setFont(customFont);
         goToInstructions.setFont(customFont);
 
         //setting the background of the window to dark gray and the text color to white
@@ -87,8 +85,6 @@ public class MainMenu extends JFrame {
         //setting button colors to black and text to white
         goToUserGuessing.setForeground(Color.WHITE);
         goToUserGuessing.setBackground(Color.BLACK);
-        goToCompGuessing.setForeground(Color.WHITE);
-        goToCompGuessing.setBackground(Color.BLACK);
         goToInstructions.setForeground(Color.WHITE);
         goToInstructions.setBackground(Color.BLACK);
         
@@ -101,14 +97,6 @@ public class MainMenu extends JFrame {
                 goToUserGuessing.setBackground(Color.BLACK);
             }
         });
-        goToCompGuessing.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                goToCompGuessing.setBackground(Color.CYAN);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                goToCompGuessing.setBackground(Color.BLACK);
-            }
-        });
         goToInstructions.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 goToInstructions.setBackground(Color.CYAN);
@@ -117,7 +105,6 @@ public class MainMenu extends JFrame {
                 goToInstructions.setBackground(Color.BLACK);
             }
         });
-
 
 
         //making the first button change so that the user has to enter a name. Adds a textfield and submit button when the first button is pressed
@@ -160,6 +147,7 @@ public class MainMenu extends JFrame {
 
                 // Add a button beside the text field
                 JButton submitButton = new JButton("begin");
+                submitButton.setFont(customFont);
                 submitButton.setBackground(Color.gray); //background colour
                 submitButton.setForeground(Color.white); //text colour
 
@@ -173,12 +161,11 @@ public class MainMenu extends JFrame {
                             enterName.setBackground(Color.RED); //set the textfield to red if no name is entered
                         } else{
                             dispose(); //if a name is entered, close the main menu
-                            Merge merge = new Merge(playerName); //open the player guessing mode with constructor parameters of the player's name
+                            CodeBreakerGUI merge = new CodeBreakerGUI(playerName, "userGuess"); //open the player guessing mode with constructor parameters of the player's name
                         }
                     }
                 });
                 comboUserName.add(submitButton, BorderLayout.EAST); //adding the submit button to the planel the first button was
-
                 //update the panel to see the new textfield and button
                 comboUserName.revalidate();
                 comboUserName.repaint();
@@ -215,56 +202,24 @@ public class MainMenu extends JFrame {
         titleCard.add(subtitle);
         comboUserName.add(goToUserGuessing);
         buttonList.add(comboUserName);
-        buttonList.add(goToCompGuessing);
         buttonList.add(goToInstructions);
         mainUI.add(titleCard);
         mainUI.add(buttonList);
         add(mainUI, BorderLayout.CENTER);
         
-        play();
+        playSound();
     }
     
-    void play() {
-    	boolean playCompleted = false;
-        File audioFile = new File("E:/Test/Audio.wav");
- 
+    public void playSound() {
         try {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
- 
-            AudioFormat format = audioStream.getFormat();
- 
-            DataLine.Info info = new DataLine.Info(Clip.class, format);
- 
-            Clip audioClip = (Clip) AudioSystem.getLine(info);
- 
-            audioClip.addLineListener((LineListener) this);
- 
-            audioClip.open(audioStream);
-             
-            audioClip.start();
-            
-            while (!playCompleted) {
-                // wait for the playback completes
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-            }
-             
-            audioClip.close();
-             
-        } catch (UnsupportedAudioFileException ex) {
-            System.out.println("The specified audio file is not supported.");
-            ex.printStackTrace();
-        } catch (LineUnavailableException ex) {
-            System.out.println("Audio line for playing back is unavailable.");
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            System.out.println("Error playing the audio file.");
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("OscarPetersonJamBlues.wav").getAbsoluteFile());
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch(Exception ex) {
+            System.out.println("Error with playing sound.");
             ex.printStackTrace();
         }
-         
     }
 
     public static void main(String[]args){
