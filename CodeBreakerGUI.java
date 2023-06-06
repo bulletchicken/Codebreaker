@@ -11,7 +11,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     private static ArrayList<ArrayList<Character>> possibleCombinations = new ArrayList<>();
     private static ArrayList<Character> code = new ArrayList<>();
     private static ArrayList<Character> guess = new ArrayList<>();
-    private boolean state = true;
+    private boolean state = false;
     private String playerName = "";
     private int level = 0;
     private static int numOfGuesses = 0;
@@ -23,6 +23,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     JPanel resetAndCountPan = new JPanel();// for reset button and guess count
 
     static String lastCom;
+    
+    String[]computerPhrases = {"This is a hard code...", "Oh this is easy!", "I can do it!, it has to have Red right?", "One step closer to cracking this code!"};
     JButton crackCode = new JButton("Crack the code");// user guessing mode
     JButton compFindCode = new JButton("Computer find code");
     JButton instructionsButton = new JButton("Instructions");
@@ -192,23 +194,26 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         displayLeaderBoard();
     }
 
-    Color oldColour;
-    Color oldForeCOlour;
+    Color oldColour = Color.WHITE;
+    Color oldForeCOlour = Color.BLACK;
 
     public void initUserGuess() {
         genCode();
+        leaderboardArea.setText("");
+        displayLeaderBoard();
     }
 
     public void initComputer() {
         generateOutcomes();
         guess.add('G');
         guess.add('G');
-        guess.add('R');
-        guess.add('R');
+        guess.add('G');
+        guess.add('G');
         for (int i = 0; i < 4; i++) {
             guessBoxes.get(numOfGuesses).get(i).setBackground(buttonColours.get(String.valueOf(guess.get(i))));
             ;
         }
+        leaderboardArea.setText("I am Mr. B, a codebreaker AI! Start the game by writing down your code on a piece of paper and providing me the hints by clicking and placing the black and white hints to the left! I already have my first guess for you to start it off!");
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -350,12 +355,13 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             if (bw.contains(event.getSource())) {
                 System.out.println("colour select");
                 state = true;
+                System.out.println("lastCom" + lastCom);
                 lastCom = bw.get(bw.indexOf(event.getSource())).getText();
                 JButton temp = (JButton) event.getSource();
                 oldColour = temp.getBackground();
                 oldForeCOlour = temp.getForeground();
             }
-            if (!over) {
+            if (!over && state) {
                 int index = hintBoxes.get(numOfGuesses).indexOf(event.getSource());
 
                 if (state && index != -1) {
@@ -397,6 +403,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                                     .setBackground(buttonColours.get(String.valueOf(guess.get(i))));
                             ;
                         }
+                        
+                        leaderboardArea.setText(computerPhrases[(int)Math.random()*computerPhrases.length]);
                     }
 
                 }
@@ -431,6 +439,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         // creating a copy of the guess combination and the answer combination
         ArrayList<Character> guessCopy = new ArrayList<Character>();
         ArrayList<Character> codeCopy = new ArrayList<Character>();
+        
         for (int i = 0; i < guess.size(); i++) {
             guessCopy.add(guess.get(i));
             codeCopy.add(compareCode.get(i));
@@ -465,6 +474,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     public void restart() {
         genCode();
         generateOutcomes();// regenerate possible combinations
+        leaderboardArea.removeAll(); //clears the leaderboard
         numOfGuesses = 0;
         over = false;
         guessCount.setText("guesses: 0");
@@ -597,8 +607,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             rightRows[i].add(hintPanels[i]);
             rightRows[i].setBorder(new EmptyBorder(10, 0, 10, 0));
             rs.add(rightRows[i]);
-            leaderboardArea.setVisible(true);
-            leaderboard.setVisible(true);
+            leaderboard.setText("Leaderboard");
+            leaderboardArea.removeAll();
         }
     }
 
@@ -655,8 +665,10 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         diffs.addActionListener(this);
         rs.add(diffs);
 
-        leaderboardArea.setVisible(false);
-        leaderboard.setVisible(false);
+        //leaderboardArea.setVisible(false);
+        leaderboard.setText("Computer Chat");
+        leaderboardArea.removeAll();
+        leaderboardArea.append("I am guessing");
     }
 
     private void win() {
@@ -789,7 +801,10 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
      * 
      * @return ArrayList<Character>
      */
-    public static ArrayList<Character> expertComputerGuess(int hints[]) {
+    public ArrayList<Character> expertComputerGuess(int hints[]) {
+    	
+    	ArrayList<ArrayList<Character>> SavePointPossibleCombinations = new ArrayList<>();
+    	SavePointPossibleCombinations.addAll(possibleCombinations);
         // cycle through all possible combinations
         for (int i = 0; i < possibleCombinations.size(); i++) {
 
@@ -807,12 +822,22 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                      // have to do the same with index
             }
         }
+        if(possibleCombinations.size()==0){
+        	System.out.println("That is impossible!");
+        	leaderboardArea.setText("That is impossible! Try redoing your hints");
+        	numOfGuesses--;
+        	possibleCombinations.addAll(SavePointPossibleCombinations);
+        	 return possibleCombinations.get(0);
+        }else{
+        	//possibleCombinations.addAll(SavePointPossibleCombinations);
+        	 return possibleCombinations.get(0);
+        }
         // set guess as one of the possible combinations, in this case, the first
-        return possibleCombinations.get(0);
+       
 
     }
 
-    public static ArrayList<Character> intermediateComputerGuess(int hints[]) {
+    public ArrayList<Character> intermediateComputerGuess(int hints[]) {
         if (Math.random() > 0.9) { // 10% of not removing all non-possible combinations
             return possibleCombinations.get((int) Math.random());
         } else {
@@ -820,7 +845,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         }
     }
 
-    public static ArrayList<Character> beginnerComputerGuess(int hints[]) {
+    public ArrayList<Character> beginnerComputerGuess(int hints[]) {
         if (Math.random() > 0.3) { // 70% of not removing all non-possible combinations
             return possibleCombinations.get((int) Math.random());
         } else {
