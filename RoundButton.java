@@ -1,12 +1,12 @@
 import java.awt.*;
 import java.awt.geom.*;
 import javax.swing.*;
- 
+
 public class RoundButton extends JButton {
- 
+
   public RoundButton(String label) {
     super(label);
- 
+
     setFocusable(false);
 
     Dimension dimensions = getPreferredSize();
@@ -26,15 +26,15 @@ public class RoundButton extends JButton {
 
     super.paintComponent(g);
   }
- 
+
   protected void paintBorder(Graphics g) {
-    g.setColor(Color.darkGray);
+    g.setColor(null);
     g.drawOval(0, 0, getSize().width - 1, getSize().height - 1);
   }
- 
+
   // Hit detection.
   Shape shape;
- 
+
   public boolean contains(int x, int y) {
     // If the button has changed dimensions,  make a new shape object.
     if (shape == null || !shape.getBounds().equals(getBounds())) {
