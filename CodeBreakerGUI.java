@@ -719,11 +719,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         }
         rightSide.add(availColours);
         rightSide.add(acp);
-        leaderboardArea.setVisible(false);
-        leaderboard.setVisible(false);
         
-
-        //leaderboardArea.setVisible(false);
         leaderboard.setText("Computer Chat");
         leaderboardArea.removeAll();
         leaderboardArea.append("I am guessing");
