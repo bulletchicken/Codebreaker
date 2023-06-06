@@ -382,8 +382,10 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
 
                     if (level == 0) { // no mode selected
                         // popup error "please select ai difficulty"
-                        System.out.println("select ai mode");
+                        leaderboardArea.setText("Please select AI mode");
                     } else {
+
+                        leaderboardArea.setText(computerPhrases[(int)Math.random()*computerPhrases.length]);
                         hints = hintSelections(); // retrieve hints from user
                         numOfGuesses++;
 
@@ -404,7 +406,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                             ;
                         }
                         
-                        leaderboardArea.setText(computerPhrases[(int)Math.random()*computerPhrases.length]);
+                       
                     }
 
                 }
@@ -814,8 +816,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             // compare if hints generated between the guess-code and the
             // guess-possibleCombination are the same
             // if the posisble combination does not generate the same hints, it cannot
-            // possibly be
-            // the answer so we remove it from the arraylist of possible combinations
+            // possibly be the answer so we remove it from the arraylist of possible combinations
             if ((results[0] != hints[0]) || (results[1] != hints[1])) {
                 possibleCombinations.remove(i);
                 i--; // when you remove a value from arraylist, all indexes shift back by one so you
