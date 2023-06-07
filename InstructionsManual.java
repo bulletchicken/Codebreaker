@@ -1,10 +1,5 @@
-import java.util.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 
 //<html>1. A 4 long code is made chosen from 6 colours (Red, Green, Blue, Yellow, Pink, Orange). <br> 2. The other player has to guess the code by also creating a 4 long code from the 6 colours within 10 moves <br> 3. Every guess the player takes, they receive hints in forms of black and white pins. For every colour the guess matches in the correct slot to the answer, they recieve a black pin on the side. For every colour that matches but is in the wrong slot recieves a white pin on the side. </html>
 public class InstructionsManual extends JFrame{
