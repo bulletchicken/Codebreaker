@@ -1,11 +1,6 @@
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
@@ -17,8 +12,6 @@ import java.io.*;
 
 
 public class MainMenu extends JFrame {
-    private static JLabel changingLabel;
-
     //The array is randomized in a way so that there will be a greater frequency of 0, O, and o so that the randomly changing text can still be read as o to some degree
     private static final String CHARACTERSO = "AOODOOXEOG0Ooogoi0olOnoOK0OU02305ocdo0oOOZa0JP0ROTsouowo0o0080";
     //Same for the other two letters
@@ -26,15 +19,17 @@ public class MainMenu extends JFrame {
     private static final String CHARACTERSA = "aACaanAaDaaHasaa1aa4aAvaIaaKaMaaXAaQaaaUaaoaadafacaalaaiaz07aa";
     private static int currentIndex = 0;
 
+    //jframe components
     JPanel mainUI = new JPanel();
     JPanel buttonList = new JPanel();
     JPanel comboUserName = new JPanel();
     JPanel titleCard = new JPanel();
     JLabel title = new JLabel("Code Breaker");
     JLabel subtitle = new JLabel("<html>By Jeremy Su & Eric Chen<br>Music by: Oscar Peterson</html>");
-    JButton goToUserGuessing = new JButton("User Guessing");
+    JButton goToUserGuessing = new JButton("Start Playing");
     JButton goToInstructions = new JButton("Instructions");
 
+    //
     public MainMenu() {
 
         //adjusting the main window's settings
@@ -161,7 +156,7 @@ public class MainMenu extends JFrame {
                             enterName.setBackground(Color.RED); //set the textfield to red if no name is entered
                         } else{
                             dispose(); //if a name is entered, close the main menu
-                            CodeBreakerGUI merge = new CodeBreakerGUI(playerName, "userGuess"); //open the player guessing mode with constructor parameters of the player's name
+                            CodeBreakerGUI codeBreakerGIO = new CodeBreakerGUI(playerName); //open the player guessing mode with constructor parameters of the player's name
                         }
                     }
                 });
@@ -223,8 +218,6 @@ public class MainMenu extends JFrame {
     }
 
     public static void main(String[]args){
-        //Merge merge = new Merge();
-        //merge.genCode();
         MainMenu mainMenu = new MainMenu();
     }
 }
