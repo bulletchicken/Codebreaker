@@ -538,7 +538,25 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         }
     }
 
-
+    /**getHint method()
+	 * 
+	 * This method is used to check two combinations and to return the hints between them.
+     * The method makes a copy of both since we will be removing values for counting. After
+     * If colours are the same in the same index between the two combinations, increment 
+     * hints[0] representing black pins. Then it removes it from the array so when we count
+     * whites it doesn't double count. For white, we loop through the remaining combinations
+     * and use .contains() to check if the same colour is atleast somewhere in the combination
+	 * 
+     * LOCAL VARIABLES
+	 * guessCopy - ArrayList<Character>
+	 * codeCopy - ArrayList<Character>
+     * 
+	 * @param:
+     * ArrayList<Character>guess
+     * ArrayList<Character>compareCode
+     * 
+	 * @return int[]
+	 */
     public static int[] getHint(ArrayList<Character> guess, ArrayList<Character> compareCode) {
         int hints[] = new int[2]; // # of pins are stored in the array. [0] represents black, [1] represents white
 
@@ -576,40 +594,48 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         return hints;
     }
 
+    /**restart()
+     * Restarts the whole gui including variables for another round
+     * 
+     * @param:
+     * String playerName, int numOfGuesses
+     * 
+     * @return void
+     */
     public void restart() {
 
-        for (JButton jb : colours) {
+        for (JButton button : colours) {
             //loops for all the buttons for the colours and resets them to their defaults
-            jb.setBackground(buttonColours.get(jb.getText()));
-            jb.setForeground(Color.black);
-            if (jb.getText().equals("B")) jb.setForeground(Color.white);
+            button.setBackground(buttonColours.get(button.getText()));
+            button.setForeground(Color.black);
+            if (button.getText().equals("B")) button.setForeground(Color.white);
 
         }
-        for(JButton jb : boxes){
+        for(JButton button : boxes){
             //resetting the buttons for the actual code itself being displayed when game ends
-            jb.setBackground(null);
-            jb.setEnabled(false);
+            button.setBackground(null);
+            button.setEnabled(false);
         }
 
         numOfGuesses = 0;
         over = false;
         guessCount.setText("guesses: 0");
-        for (JButton j : boxes) {
+        for (JButton button : boxes) {
             //resets the code display boxes to "?"
-            j.setText("?");
+            button.setText("?");
         }
-        for (ArrayList<JButton> j : guessBoxes) {
+        for (ArrayList<JButton> button : guessBoxes) {
             //resets all the guessing boxes to default colour and clearing their text
-            for (JButton jb : j) {
-                jb.setText("");
-                jb.setBackground(Color.black);
+            for (JButton button2 : button) {
+                button2.setText("");
+                button2.setBackground(Color.black);
             }
         }
-        for (ArrayList<RoundButton> j : hintBoxes) {
+        for (ArrayList<RoundButton> button : hintBoxes) {
             //resetting color and text for the hints
-            for (JButton jl : j) {
-                jl.setText("");
-                jl.setBackground(new Color(106, 157, 215));
+            for (JButton button2 : button) {
+                button2.setText("");
+                button2.setBackground(new Color(106, 157, 215));
             }
         }
 
@@ -632,38 +658,25 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
            
         }
     }
-
+    /**
+     * gameOver() 
+     * display the answer code on the top
+     *
+     * @param none
+     * @return void
+     */
     public void gameOver() {
         for (int i = 0; i < 4; i++) {
             boxes.get(i).setText(code.get(i).toString());
             boxes.get(i).setEnabled(true);
-            switch (code.get(i).toString()) {
-                case "R":
-                    boxes.get(i).setBackground(new Color(253, 104, 104));
-                    break;
-                case "G":
-                    boxes.get(i).setBackground(new Color(154, 246, 142, 240));
-                    break;
-                case "B":
-                    boxes.get(i).setBackground(new Color(85, 171, 255));
-                    boxes.get(i).setForeground(Color.white);
-                    break;
-                case "Y":
-                    boxes.get(i).setBackground(new Color(248, 233, 159));
-                    break;
-                case "O":
-                    boxes.get(i).setBackground(new Color(243, 162, 102));
-                    break;
-                case "P":
-                    boxes.get(i).setBackground(new Color(255, 174, 228));
-                    break;
-            }
+            boxes.get(i).setBackground(buttonColours.get(code.get(i).toString())); //setting the background colour of each button by matching the code to the colour map
         }
-        over = true;
+        over = true; //set over true
     }
 
     /**
-     * getGuess() method to get the list of chars in the guess boxes that the user submitted
+     * getGuess() 
+     * method to get the list of chars in the guess boxes that the user submitted
      *
      * @param none
      * @return an arraylist of Character type
@@ -687,10 +700,10 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     public void renderFeedback(int[] hints) {
         if (hints[0] == 4) {
             //if there are 4 blacks, the guess is the same as the code so the user wins
-            gameOver();
-            win();
-            
+            gameOver(); //run game over
+            win(); //run win
             over = true;
+
         } else {
             for (int i = 0; i < hints[0]; i++) {
                 hintBoxes.get(numOfGuesses).get(i).setBackground(Color.black);
@@ -704,8 +717,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     }
 
 
-    /**
-     * void method to show the current row the user is guessing on to indicate the guess
+    /**showCurrentRow()
+     * void method to highlight the current row the user is guessing on to indicate the guess
      *
      * @param none
      * @return none
@@ -750,9 +763,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 temp.addActionListener(this);
                 temp.setFont(new Font("Arial", Font.PLAIN, 20));
                 temp.setBackground(Color.black);
-
                 guessBoxes.get(i).add(temp);
-
                 rightRows[i].add(guessBoxes.get(i).get(j));
                 hintBoxes.get(i).add(new RoundButton(""));
                 hintBoxes.get(i).get(j).setBackground(new Color(106, 157, 215));
@@ -806,11 +817,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 temp.setFocusPainted(false);
                 temp.setFont(new Font("Arial", Font.PLAIN, 20));
                 temp.setBackground(new Color(26, 47, 131));
-
                 guessBoxes.get(i).add(temp);
-
                 rightRows[i].add(guessBoxes.get(i).get(j));
-
                 hintBoxes.get(i).add(new RoundButton(" "));
                 hintBoxes.get(i).get(j).setBackground(new Color(26, 75, 131));
                 hintBoxes.get(i).get(j).setFont(new Font("Arial", Font.PLAIN, 15));
@@ -854,19 +862,38 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         displayLeaderBoard();
     }
 
+    /**compWin()
+	 * This method is used to display the Winning popup for the computer after it successfully gets your code
+     * 
+	 * @param:N/A
+	 * @return void
+	 */
     private void compWin(){
         String s = "";
         for(char c : guess){
             s+=c;
         }
         JOptionPane.showMessageDialog(null, "The code is: " + s, "Your Code is:", JOptionPane.INFORMATION_MESSAGE);
-
     }
 
+    /**loss()
+	 * This method is used to display the losing popup
+     * 
+	 * @param:N/A
+	 * @return void
+	 */
     private void loss() {
         JOptionPane.showMessageDialog(null, "Unfortunately, you lost.", "Defear", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**hintSelections()
+	 * This method is used to retrieve the user input on the hints
+     * they provided for the AI
+     * 
+	 * @param:N/A
+     * 
+	 * @return int[]
+	 */
     public int[] hintSelections() {
         int[] hints = new int[2];
         for (JButton j : hintBoxes.get(numOfGuesses)) {
@@ -964,16 +991,21 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
      */
 
     public static void generateOutcomes() {
+        //loop for all the 1st slot colours
         for (int a = 0; a < COLORS.length; a++) {
+            //loop for all the 2nd slot colours
             for (int b = 0; b < COLORS.length; b++) {
+                //loop for all the 3rd slot colours
                 for (int c = 0; c < COLORS.length; c++) {
+                    //loop for all the 4th slot colours
                     for (int d = 0; d < COLORS.length; d++) {
+                        //create a temporary combination arraylist to store the combination to add to the total possible combinations
                         ArrayList<Character> combination = new ArrayList<>();
-                        combination.add(COLORS[a]);
+                        combination.add(COLORS[a]); //add from the available colours array
                         combination.add(COLORS[b]);
                         combination.add(COLORS[c]);
                         combination.add(COLORS[d]);
-                        possibleCombinations.add(combination);
+                        possibleCombinations.add(combination); //add the final combination into the possible combinations
                     }
                 }
             }
@@ -981,7 +1013,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     }
 
     /**
-     * computerGuess method()
+     * expertComputerGuess()
      * 
      * This method is used to generate the next guest and eventually reach the
      * answer. The method cycles through all possible combinations and then calls the
@@ -989,7 +1021,9 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
      * will see if the possibleCombination will produce the exact same hint as the
      * answer. If it doesn't, the combination is no longer possible at all and is removed
      * from the list. The next guess should be any value still remaining in the possible
-     * combinations.
+     * combinations. It also has a save point arraylist that is used to save the possible
+     * combinations before trying another guess. This is to be able to backup after a 
+     * faulty hint was given.
      * 
      * @param:
      * int         hints[]
@@ -1016,11 +1050,13 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                      // have to do the same with index
             }
         }
+        //if all combinations are reached, the user hints were faulty
         if(possibleCombinations.size()==0){
+            //display in the chat log
         	leaderboardArea.setText("That is impossible! Try redoing your hints");
-        	numOfGuesses--;
-        	possibleCombinations.addAll(SavePointPossibleCombinations);
-        	 return possibleCombinations.get(0);
+        	numOfGuesses--; //remove this guess as it does not count
+        	possibleCombinations.addAll(SavePointPossibleCombinations); //revert back to the savepoint
+        	return guess; //does not change the original guess
         }else{
         	//possibleCombinations.addAll(SavePointPossibleCombinations);
         	 return possibleCombinations.get(0);
@@ -1030,19 +1066,45 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
 
     }
 
+    /**
+     * intermediateComputerGuess()
+     * 
+     * This method is used to generate the next guest and eventually reach the
+     * answer. There is a 20% chance of not removing all non-possible combinations
+     * like the expert computer guess does. This results in an extra or more wasteful
+     * move, taking longer to reach the answer.
+     * 
+     * @param:
+     * int hints[]
+     * 
+     * @return ArrayList<Character>
+     */
     public ArrayList<Character> intermediateComputerGuess(int hints[]) {
-        if (Math.random() > 0.9) { // 10% of not removing all non-possible combinations
+        if (Math.random() > 0.8) { // 20% of not removing all non-possible combinations
             return possibleCombinations.get((int) (Math.random()*possibleCombinations.size()));
         } else {
-            return expertComputerGuess(hints);
+            return expertComputerGuess(hints);//run the expertComputerGuess and return whatever that returns
         }
     }
 
+    /**
+     * beginnerComputerGuess()
+     * 
+     * This method is used to generate the next guest and eventually reach the
+     * answer. There is a 70% chance of not removing all non-possible combinations
+     * like the expert computer guess does. This results in an extra or more wasteful
+     * move, taking longer to reach the answer.
+     * 
+     * @param:
+     * int hints[]
+     * 
+     * @return ArrayList<Character>
+     */
     public ArrayList<Character> beginnerComputerGuess(int hints[]) {
         if (Math.random() > 0.3) { // 70% of not removing all non-possible combinations
             return possibleCombinations.get((int) (Math.random() * possibleCombinations.size()));
         } else {
-            return expertComputerGuess(hints);
+            return expertComputerGuess(hints); //run the expertComputerGuess and return whatever that returns
         }
     }
 }
