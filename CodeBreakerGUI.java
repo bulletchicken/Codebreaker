@@ -1,3 +1,13 @@
+/*
+Names: Eric Chen, Jeremy Su
+Class: ICS4U Mr.A
+Descirption: Our solution to our client's request of a codebreaker game with a user guessing mode, and AI guessing mode
+This file is the main logic for the program with the AI guessing user guessing modes. This file also contians
+all the code for the GUI during game play.
+Date started: 5/22/2023
+Date completed: 6/7/2023
+Language: Java
+ */
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.plaf.FontUIResource;
