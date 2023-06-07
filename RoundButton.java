@@ -1,3 +1,11 @@
+/*
+Names: Eric Chen, Jeremy Su
+Class: ICS4U Mr.A
+Descirption: Our solution to our client's request of a codebreaker game with a user guessing mode, and AI guessing mode
+This file is the RoundedButton object created for the customized JButton with rounded egdes.
+Date started: 5/22/2023
+Date completed: 6/7/2023
+ */
 import java.awt.*;
 import java.awt.geom.*;
 import javax.swing.*;
