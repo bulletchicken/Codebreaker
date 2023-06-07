@@ -230,10 +230,24 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         leaderboardArea.setText("I am Mr. B, a codebreaker AI! Start the game by writing down your code on a piece of paper and providing me the hints by clicking and placing the black and white hints to the left! I already have my first guess for you to start it off!");
     }
 
+    /** ActionPerformed method
+     *  Called automactically by the program when anything with an action listener is interacted with.
+     *  Depending on the object that was pressed, different code will be executed
+     *  if the command used was a game mode, that game mode will be run
+     *  once the game mode is set, whenever a colour peg is clicked, the appropiate boxes can be clicked on to set its colour
+     *  once boxes colour is set, in the user guessing mode, you can use the submit, clear, or restart buttons to do their repsective functions
+     *
+     * @param event the event that occured once an object with an actionlistener is interacted with
+     *              returns void
+     */
     public void actionPerformed(ActionEvent event) {
         int[] hints = new int[2];
         String command = event.getActionCommand();
         if (command.equals("Computer find code")) {
+            /*
+            if computer guessing code mode, clear the board and add in the computer guessing layout and components
+            and re-render the frame
+             */
             restart();
             rightSide.removeAll();
             remove(rightSide);
@@ -251,6 +265,11 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             System.out.println(" compyure gues smdoe");
         }
         if (command.equals("Crack the code")) {
+            /*
+            if game mode is user guessing the code,
+            clear the board and add its repsectice layout and buttons
+            then re-render the frame and reset all the colours
+             */
             initUserGuess();
             gameMode = "userGuess";
             rightSide.removeAll();
@@ -275,6 +294,12 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
             InstructionsManual instructionsManual = new InstructionsManual();
         }
         if (gameMode.equals("userGuess")) {
+            /*
+            if gamemode is set to user guessing, allow user to select colour by pressing the according button
+            once a button is pressed, its colour is saved and any guess box can be set to that colour to represent
+            a part of the guess.
+
+             */
             if (colours.contains(event.getSource())) {
                 state = true;
                 lastCom = colours.get(colours.indexOf(event.getSource())).getText();
@@ -309,6 +334,9 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 }
 
                 if (command.equals("clear")) {
+                    /*
+                    if the clear button is pressed, reset all the colours at the current guess row
+                     */
                     for (JButton j : guessBoxes.get(numOfGuesses)) {
                         j.setText("");
                         j.setBackground(Color.white);
@@ -316,6 +344,11 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                     }
                 }
                 if (command.equals("submit")) {
+                    /*
+                    if user submits their guess, store the guess in an arraylist
+                    after, pass the list to a checking method to get hints
+                    increment guess count at every guess until 10 at which, the game ends and losing message dialog will pop up
+                     */
                     ArrayList<Character> guessList = new ArrayList<>();
                     for (JButton jb : colours) {
 
@@ -351,6 +384,7 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                 }
             }
             if (command.equals("restart")) {
+                //if command is to restart, call the restart method which resets everything to defaults
                 restart();
             }
         } else if (gameMode.equals("compGuess")) {
@@ -446,6 +480,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
     private static final char[] COLORS = { 'G', 'R', 'B', 'Y', 'O', 'P' };
 
     public static void genCode() {
+        //using an array of chars, we can randomly generate a number to grab that char from the array to add it to the code list
+        // this will be the randomly generated code that the user must guess
         code = new ArrayList<>();
         for (int i = 0; i < 4; i++) { // randomly generate the codeStr
             int tempNum = ((int) (Math.random() * 6));
@@ -496,17 +532,18 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
 
     public void restart() {
         for (JButton jb : colours) {
-
+            //loops for all the buttons for the colours and resets them to their defaults
             jb.setBackground(buttonColours.get(jb.getText()));
             jb.setForeground(Color.black);
             if (jb.getText().equals("B")) jb.setForeground(Color.white);
 
         }
         for(JButton jb : boxes){
+            //resetting the buttons for the actual code itself being displayed when game ends
             jb.setBackground(null);
             jb.setEnabled(false);
         }
-        genCode();
+        genCode(); //generates a new code
         generateOutcomes();// regenerate possible combinations
         leaderboardArea.removeAll(); //clears the leaderboard
         numOfGuesses = 0;
@@ -515,22 +552,25 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         whiteLabel.setText("");
         blackLabel.setText("");
         for (JButton j : boxes) {
+            //resets the code display boxes to "?"
             j.setText("?");
         }
         for (ArrayList<JButton> j : guessBoxes) {
+            //resets all the guessing boxes to default colour and clearing their text
             for (JButton jb : j) {
                 jb.setText("");
                 jb.setBackground(Color.black);
             }
         }
         for (ArrayList<RoundButton> j : hintBoxes) {
+            //resetting color and text for the hints
             for (JButton jl : j) {
                 jl.setText("");
                 jl.setBackground(new Color(106, 157, 215));
             }
         }
         blackLabel.setFont(new Font("Arial", Font.PLAIN, 60));
-        showCurrentRow();
+        showCurrentRow();// shows the first row to indicate the first guess
     }
 
     public void gameOver() {
@@ -562,17 +602,31 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         over = true;
     }
 
+    /**
+     * getGuess() method to get the list of chars in the guess boxes that the user submitted
+     *
+     * @param none
+     * @return an arraylist of Character type
+     */
     public ArrayList<Character> getGuess() {
+
         guess = new ArrayList<>();
         ArrayList<Character> guessList = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
+            //gets the char of the text at the current row's box
             guessList.add(guessBoxes.get(numOfGuesses).get(i).getText().charAt(0));
         }
         return guessList;
     }
 
+    /** renderFeedback void method
+     *  this method changes the colour of the hints for each guess
+     *  loops through the array of hitns and changes the colours of the hint boxes accordiningly
+     * @param hints the hints from the user's guess
+     */
     public void renderFeedback(int[] hints) {
         if (hints[0] == 4) {
+            //if there are 4 blacks, the guess is the same as the code so the user wins
             gameOver();
             win();
             over = true;
@@ -589,6 +643,13 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
         }
     }
 
+
+    /**
+     * void method to show the current row the user is guessing on to indicate the guess
+     *
+     * @param none
+     * @return none
+     */
     public void showCurrentRow() {
         for (int i = 0; i < 4; i++) {
             if (numOfGuesses < 10) {
