@@ -442,7 +442,8 @@ public class CodeBreakerGUI extends JFrame implements ActionListener {
                             }
                             if (numOfGuesses == 10) {
                                 gameOver();
-                                loss();
+                                if(hints[0]!=4)
+                                    loss();
                             }
                         }
                     }
